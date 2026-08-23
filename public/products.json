@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Premium Leather Wallet",
+    "price": 1200,
+    "category": "Accessories",
+    "stock": 15,
+    "image": "https://images.unsplash.com/photo-1627123424558-f86521990488?w=500"
+  },
+  {
+    "id": 2,
+    "name": "Wireless Bluetooth Headphone",
+    "price": 3500,
+    "category": "Electronics",
+    "stock": 0,
+    "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500"
+  },
+  {
+    "id": 3,
+    "name": "Minimalist Smart Watch",
+    "price": 4500,
+    "category": "Electronics",
+    "stock": 8,
+    "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500"
+  },
+  {
+    "id": 4,
+    "name": "Casual Denim Jacket",
+    "price": 2800,
+    "category": "Clothing",
+    "stock": 5,
+    "image": "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=500"
+  },
+  {
+    "id": 5,
+    "name": "Ergonomic Gaming Mouse",
+    "price": 1500,
+    "category": "Electronics",
+    "stock": 0,
+    "image": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500"
+  },
+  {
+    "id": 6,
+    "name": "Stainless Steel Water Bottle",
+    "price": 950,
+    "category": "Lifestyle",
+    "stock": 20,
+    "image": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500"
+  }
+]
