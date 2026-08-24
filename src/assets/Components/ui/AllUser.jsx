@@ -66,16 +66,16 @@ const AllUser = () => {
     };
 
     return (
-        <div className="p-6 md:p-10 bg-slate-100 min-h-screen">
+        <div className="p-4 sm:p-6 md:p-10 bg-slate-100 min-h-screen">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-white p-6 rounded-2xl shadow-sm">
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 sm:mb-8 gap-4 bg-white p-5 sm:p-6 rounded-2xl shadow-sm">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Manage Users</h1>
-                    <p className="text-slate-500 text-sm mt-1">Total Users: <span className="font-semibold text-indigo-600">{users.length}</span></p>
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800">Manage Users</h1>
+                    <p className="text-slate-500 text-xs sm:text-sm mt-1">Total Users: <span className="font-semibold text-indigo-600">{users.length}</span></p>
                 </div>
                 
                 {/* Search Box */}
-                <div className="relative w-full md:w-72">
+                <div className="relative w-full sm:w-72">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                         <FaSearch />
                     </span>
@@ -89,11 +89,11 @@ const AllUser = () => {
                 </div>
             </div>
 
-            {/* Table Section */}
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200">
-                <div className="overflow-x-auto">
+            {/* Desktop Table & Mobile Card Section */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                {/* বড় স্ক্রিনের জন্য টেবিল */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="table w-full text-left border-collapse">
-                        {/* head */}
                         <thead className="bg-indigo-600 text-white uppercase text-xs tracking-wider">
                             <tr>
                                 <th className="py-4 px-6">#</th>
@@ -145,6 +145,49 @@ const AllUser = () => {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* মোবাইল স্ক্রিনের জন্য কার্ড লেআউট */}
+                <div className="block md:hidden divide-y divide-slate-100">
+                    {filteredUsers.length > 0 ? (
+                        filteredUsers.map((user, index) => (
+                            <div key={user._id} className="p-4 flex flex-col gap-3">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <span className="text-xs font-semibold text-slate-400">#{index + 1}</span>
+                                        <h2 className="font-bold text-slate-800 text-base">{user?.name || 'N/A'}</h2>
+                                        <p className="text-xs text-slate-500 break-all">{user?.email}</p>
+                                    </div>
+                                    <div>
+                                        {user.role === 'admin' ? (
+                                            <span className="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide">
+                                                Admin
+                                            </span>
+                                        ) : (
+                                            <button 
+                                                onClick={() => handleAdmin(user)} 
+                                                className="bg-amber-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow-sm"
+                                            >
+                                                <FaUsers /> Make Admin
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="flex justify-end pt-2 border-t border-slate-50">
+                                    <button 
+                                        onClick={() => handleDeleteUser(user)} 
+                                        className="bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5"
+                                    >
+                                        <MdOutlineDelete className="text-base" /> Delete User
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center py-8 text-slate-400 text-sm">
+                            No users found!
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

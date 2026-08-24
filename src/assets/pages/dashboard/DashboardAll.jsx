@@ -1,6 +1,6 @@
 import { useState } from "react";
-import {  BsBagCheckFill, BsClockHistory } from "react-icons/bs";
-import { FaHouseUser, FaRegUserCircle, FaBars, FaTimes, FaBoxOpen, FaClipboardList } from "react-icons/fa";
+import { BsBagCheckFill, BsClockHistory } from "react-icons/bs";
+import { FaHouseUser, FaRegUserCircle, FaBars, FaTimes, FaBoxOpen, FaClipboardList, FaEnvelopeOpenText } from "react-icons/fa";
 import { GoReport } from "react-icons/go";
 import { IoMdAddCircle } from "react-icons/io";
 import { TfiAnnouncement } from "react-icons/tfi";
@@ -66,6 +66,7 @@ const DashboardAll = () => {
                             <li><NavLink to='/dashboard/reportedComments' onClick={() => setIsSidebarOpen(false)} className={navLinkClass}><GoReport size={18} /> Reported Comments</NavLink></li>
                             <li><NavLink to='/dashboard/makeAnnouncement' onClick={() => setIsSidebarOpen(false)} className={navLinkClass}><TfiAnnouncement size={18} /> Make Announcement</NavLink></li>
                             <li><NavLink to='/dashboard/manageOrders' onClick={() => setIsSidebarOpen(false)} className={navLinkClass}><FaClipboardList size={18} /> Manage Orders</NavLink></li>
+                            <li><NavLink to='/dashboard/adminMessages' onClick={() => setIsSidebarOpen(false)} className={navLinkClass}><FaEnvelopeOpenText size={18} /> Admin Messages</NavLink></li>
                         </>
                     ) : (
                         <>

@@ -21,6 +21,8 @@ import MyOrders from "../Components/ui/MyOrders";
 import PaymentHistory from "../Components/ui/PaymentHistory";
 import MakeAnnouncement from "../Components/ui/MakeAnnouncement";
 import ReportedComments from "../Components/ui/ReportedComments";
+import ContactUs from "../Components/ui/ContactUs";
+import AdminMessages from "../Components/ui/AdminMessages";
 
 const router = createBrowserRouter([
     {
@@ -42,7 +44,7 @@ const router = createBrowserRouter([
             {
                 path: '/products/:id',
                 element: <PrivateRoot><ProductDetails></ProductDetails></PrivateRoot>,
-                loader: ({params})=>fetch(`https://bilal-zone-backend.onrender.com/products/${params.id}`)
+                loader: ({params})=>fetch(`http://localhost:5000/products/${params.id}`)
             },{
                 path:'/cart',
                 element:<PrivateRoot><ShoppingCart></ShoppingCart></PrivateRoot>
@@ -52,6 +54,10 @@ const router = createBrowserRouter([
             },{
                 path: '/register',
                 element: <Register></Register>
+            },
+            {
+                path: '/contactUs',
+                element: <ContactUs></ContactUs>
             },{
                 path: '/dashboard',
                 element: <PrivateRoot><DashboardAll></DashboardAll></PrivateRoot>,
@@ -90,6 +96,9 @@ const router = createBrowserRouter([
                      },{
                         path: 'reportedComments',
                         element: <ReportedComments></ReportedComments>
+                     },{
+                        path: 'adminMessages',
+                        element: <AdminMessages></AdminMessages>
                      }
                 ]
             }

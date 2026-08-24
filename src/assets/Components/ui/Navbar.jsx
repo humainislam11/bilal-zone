@@ -107,6 +107,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-6 font-medium text-sm">
             <NavLink to="/" className={activeLinkStyle}>Home</NavLink>
             <NavLink to="/products" className={activeLinkStyle}>Shop</NavLink>
+            <NavLink to="/contactUs" className={activeLinkStyle}>Contact-Us</NavLink>
             {user && (
               <NavLink to="/dashboard" className={activeLinkStyle}>Dashboard</NavLink>
             )}

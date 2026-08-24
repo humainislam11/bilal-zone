@@ -58,7 +58,7 @@ const Register = () => {
     }
   };
 
-  // ধাপ ২: ওটিপি ভেরিফাই করে ফায়ারবেসে অ্যাকাউন্ট তৈরি, ব্যাকএন্ড থেকে টোকেন নেওয়া এবং ডাটা সেভ করা
+  // ধাপ ২: ওটিপি ভেরিফাই করে ফায়ারবেসে অ্যাকাউন্ট তৈরি, ব্যাকএন্ড থেকে টোকেন নেওয়া এবং ডাটা সেভ করা
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setError('');
@@ -70,11 +70,11 @@ const Register = () => {
         return setError("Invalid OTP Code! Please check your Gmail.");
       }
 
-      // ১. ফায়ারবেসে ইউজার তৈরি করা
+      // ১. ফায়ারবেসে ইউজার তৈরি করা
       const result = await createUser(email, password);
       const loggedUser = result.user;
 
-      // ২. ব্যাকএন্ডের /jwt রাউট থেকে নিজস্ব টোকেন জেনারেট করে নেওয়া
+      // ২. ব্যাকএন্ডের /jwt রাউট থেকে নিজস্ব টোকেন জেনারেট করে নেওয়া
       const resToken = await axiosPublic.post('/jwt', { email: loggedUser.email });
       const token = resToken.data.token;
       
@@ -115,7 +115,7 @@ const Register = () => {
       const result = await googleLogin();
       const loggedUser = result.user;
       
-      // গুগল লগইনের ক্ষেত্রেও ব্যাকএন্ড থেকে JWT টোকেন নিয়ে নেওয়া
+      // গুগল লগইনের ক্ষেত্রেও ব্যাকএন্ড থেকে JWT টোকেন নিয়ে নেওয়া
       const resToken = await axiosPublic.post('/jwt', { email: loggedUser.email });
       const token = resToken.data.token;
       localStorage.setItem('access-token', token);
@@ -139,7 +139,12 @@ const Register = () => {
       });
       navigate('/');
     } catch (err) {
-      setError(err.message.replace("Firebase: ", ""));
+      // ইউজার পপআপ কেটে দিলে ফায়ারবেসের এই এররটি হ্যান্ডেল করা হলো যাতে অ্যাপ ক্রাশ না করে
+      if (err.code === 'auth/popup-closed-by-user') {
+        console.log("Google popup closed by user.");
+      } else {
+        setError(err.message.replace("Firebase: ", ""));
+      }
     }
   };
 
@@ -205,7 +210,7 @@ const Register = () => {
                   className="w-full bg-gray-50 text-gray-800 pl-10 pr-10 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
                 />
                 <FiLock className="absolute left-3.5 top-3.5 text-gray-400 text-lg" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-3.5 text-gray-400">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-3.5 text-gray-400 cursor-pointer">
                   {showPassword ? <FiEyeOff className="text-lg" /> : <FiEye className="text-lg" />}
                 </button>
               </div>
@@ -229,7 +234,7 @@ const Register = () => {
             <button 
               type="submit" 
               disabled={loading} 
-              className="w-full text-white font-semibold py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 transition-all text-sm flex items-center justify-center gap-2"
+              className="w-full text-white font-semibold py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 transition-all text-sm flex items-center justify-center gap-2 cursor-pointer"
             >
               <FiUserPlus className="text-base" /> 
               <span>{loading ? "Sending OTP..." : "Get OTP Code"}</span>
@@ -253,7 +258,7 @@ const Register = () => {
             <button 
               type="submit" 
               disabled={loading} 
-              className="w-full text-white font-semibold py-3.5 rounded-xl bg-green-600 hover:bg-green-700 transition-all text-sm flex items-center justify-center gap-2"
+              className="w-full text-white font-semibold py-3.5 rounded-xl bg-green-600 hover:bg-green-700 transition-all text-sm flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>{loading ? "Verifying..." : "Verify & Register"}</span>
             </button>
@@ -265,7 +270,7 @@ const Register = () => {
             <button 
               onClick={handleGoogleLogin} 
               type="button"
-              className="w-full flex items-center justify-center gap-2 border border-gray-200 rounded-xl py-3 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-all"
+              className="w-full flex items-center justify-center gap-2 border border-gray-200 rounded-xl py-3 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
             >
               <FaGoogle className="text-red-500 text-base" /> Google
             </button>

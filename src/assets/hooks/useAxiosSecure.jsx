@@ -5,7 +5,7 @@ import { AuthContext } from "../../context/AuthContext";
 
 
 const axiosSecure = axios.create({
-    baseURL: 'https://bilal-zone-backend.onrender.com',
+    baseURL: 'http://localhost:5000',
   });
 const useAxiosSecure = () => {
   const navigate = useNavigate();

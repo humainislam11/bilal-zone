@@ -22,7 +22,7 @@ const PrivateRoot = ({ children }) => {
     }
 
     // লগইন করা না থাকলে লোকেশনসহ রিডাইরেক্ট করবে
-    return <Navigate state={{ from: location }} to='/login' replace />;
+    return <Navigate state={{ from: location }} to='/register' replace />;
 };
 
 PrivateRoot.propTypes = {
