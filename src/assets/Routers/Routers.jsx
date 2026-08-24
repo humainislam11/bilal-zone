@@ -44,7 +44,7 @@ const router = createBrowserRouter([
             {
                 path: '/products/:id',
                 element: <PrivateRoot><ProductDetails></ProductDetails></PrivateRoot>,
-                loader: ({params})=>fetch(`http://localhost:5000/products/${params.id}`)
+                loader: ({params})=>fetch(`https://bilal-zone-backend.onrender.com/products/${params.id}`)
             },{
                 path:'/cart',
                 element:<PrivateRoot><ShoppingCart></ShoppingCart></PrivateRoot>
