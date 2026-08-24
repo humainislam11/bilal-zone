@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosPublic = axios.create({
-    baseURL: 'https://bilal-zone-backend.onrender.com',
+    baseURL: 'https://bilalzone-backend.vercel.app',
   });
 const useAxiosPublic = () => {
     return axiosPublic;
