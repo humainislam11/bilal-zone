@@ -152,7 +152,7 @@ const AdminMessages = () => {
                                     onChange={(e) => setReplyText(e.target.value)}
                                     placeholder="Write your reply here..."
                                     required
-                                    className="w-full p-3 bg-gray-50 rounded-xl border text-sm focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                                    className="w-full p-3 text-gray-600 bg-gray-50 rounded-xl border text-sm focus:ring-2 focus:ring-orange-400 focus:outline-none"
                                 ></textarea>
                             </div>
 

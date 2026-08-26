@@ -72,7 +72,7 @@ const ShoppingCart = () => {
       {cartItems.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-sm">
           <p className="text-lg sm:text-xl font-medium text-gray-500">Cart is empty!</p>
-          <Link to="/shop" className="inline-block mt-4 px-6 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 transition-all">
+          <Link to="/products" className="inline-block mt-4 px-6 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 transition-all">
             Go to Shop
           </Link>
         </div>

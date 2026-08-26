@@ -12,6 +12,8 @@ const ProductDetails = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const [activeImage, setActiveImage] = useState(product?.images?.[0] || product?.image);
   const [quantity, setQuantity] = useState(1);
@@ -47,6 +49,19 @@ const ProductDetails = () => {
     }
   }, [product?._id, axiosPublic]);
 
+  // উইশলিস্টে অলরেডি আছে কিনা চেক করার জন্য
+  useEffect(() => {
+    if (user?.email && product?._id) {
+      axiosPublic.get(`/wishlist/check?email=${user.email}&productId=${product._id}`)
+        .then(res => {
+          if (res.data?.exists) {
+            setIsWishlisted(true);
+          }
+        })
+        .catch(err => console.error("Error checking wishlist:", err));
+    }
+  }, [user?.email, product?._id, axiosPublic]);
+
   const handleQuantityChange = (type) => {
     if (type === 'decrease' && quantity > 1) {
       setQuantity(quantity - 1);
@@ -59,6 +74,41 @@ const ProductDetails = () => {
     setSelectedColor(color);
     if (product?.images && product.images[index]) {
       setActiveImage(product.images[index]);
+    }
+  };
+
+  // উইশলিস্টে অ্যাড করার ফাংশন
+  const handleAddToWishlist = async () => {
+    if (!user?.email) {
+      return Swal.fire({ icon: 'error', title: 'Please login first!' });
+    }
+
+    setWishlistLoading(true);
+    const wishlistItem = {
+      productId: product._id,
+      name: product.name,
+      price: displayPrice,
+      email: user.email,
+      image: activeImage || product.images?.[0] || product.image,
+      category: product.category,
+      description: product.description
+    };
+
+    try {
+      const res = await axiosPublic.post('/wishlist', wishlistItem);
+      if (res.data.message === 'already exists' || res.data.insertedId === undefined) {
+        Swal.fire({ icon: 'info', title: 'Already in your Wishlist!', timer: 1500, showConfirmButton: false });
+        setIsWishlisted(true);
+      } else if (res.data.insertedId) {
+        Swal.fire({ icon: 'success', title: 'Added to Wishlist!', timer: 1500, showConfirmButton: false });
+        setIsWishlisted(true);
+        window.dispatchEvent(new Event('wishlistUpdated'));
+      }
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      Swal.fire({ icon: 'error', title: 'Failed to add to wishlist' });
+    } finally {
+      setWishlistLoading(false);
     }
   };
 
@@ -242,11 +292,20 @@ const ProductDetails = () => {
                 </span>
                 
                 {/* Share & Wishlist */}
-                <div className="flex gap-4 text-gray-500 relative text-lg">
+                <div className="flex gap-4 text-gray-500 relative text-lg items-center">
                   <button onClick={() => setShowShareModal(!showShareModal)} className="cursor-pointer hover:text-orange-600">
                     <FiShare2 />
                   </button>
-                  <FiHeart className="cursor-pointer hover:text-red-500" />
+                  
+                  {/* Wishlist Button with Active State */}
+                  <button 
+                    disabled={wishlistLoading} 
+                    onClick={handleAddToWishlist} 
+                    className={`cursor-pointer transition-colors ${isWishlisted ? 'text-red-500' : 'hover:text-red-500'}`}
+                    title="Add to Wishlist"
+                  >
+                    <FiHeart className={isWishlisted ? 'fill-red-500' : ''} />
+                  </button>
 
                   {showShareModal && (
                     <div className="absolute right-0 top-8 bg-white border shadow-xl rounded-2xl p-4 w-64 z-20 space-y-3">

@@ -1,5 +1,6 @@
 import AnnouncementSlider from "./AnnouncementSlider";
 import Banner from "./Banner";
+import BannerGrid from "./BannerGrid";
 import Footer from "./Footer";
 import ProductCatalog from "./ProductCatalog";
 
@@ -11,6 +12,7 @@ const Home = () => {
             <Banner></Banner>;
             
             <ProductCatalog></ProductCatalog>
+            <BannerGrid></BannerGrid>
             <Footer></Footer>
         </div>
     );

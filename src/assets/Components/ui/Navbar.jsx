@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../context/AuthContext';
-import { FiShoppingCart, FiUser, FiSearch, FiMenu, FiX, FiLogOut, FiLayout } from 'react-icons/fi';
+import { FiShoppingCart, FiUser, FiSearch, FiMenu, FiX, FiLogOut, FiLayout, FiHeart } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
 
@@ -11,6 +11,7 @@ const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [cart, setCart] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
 
   const { user, logOut } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -41,140 +42,191 @@ const Navbar = () => {
     }
   };
 
-  // 🎨 অ্যাক্টিভ রাউট হাইলাইট করার জন্য টেলউইন্ড ক্লাস ফাংশন
+  // 🎨 অ্যাক্টিভ রাউট হাইলাইট করার জন্য স্টাইল
   const activeLinkStyle = ({ isActive }) => 
     isActive 
-      ? "text-blue-600 font-bold border-b-2 border-blue-600 pb-1 transition-all" 
-      : "text-gray-600 hover:text-blue-600 transition-colors pb-1";
+      ? "text-orange-600 font-bold transition-all" 
+      : "text-slate-700 hover:text-orange-600 transition-colors";
 
   const mobileActiveLinkStyle = ({ isActive }) => 
     isActive 
-      ? "block px-3 py-2 rounded-xl bg-blue-50 text-blue-600 font-bold" 
-      : "block px-3 py-2 rounded-xl text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors";
+      ? "block px-3 py-2 rounded-xl bg-orange-50 text-orange-600 font-bold" 
+      : "block px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-orange-600 transition-colors";
 
-  // 🛒 রিয়েল-টাইম কার্ট ফেচ করার জন্য useEffect এবং Event Listener
+  // 🛒 রিয়েল-টাইম কার্ট এবং উইশলিস্ট ফেচ ও ইভেন্ট লিসেনার
   useEffect(() => {
-    const fetchCart = () => {
+    let isMounted = true;
+
+    const fetchCartAndWishlist = () => {
       if (user?.email) {
+        // কার্ট ডেটা ফেচ
         axiosPublic.get(`/cart?email=${user.email}`)
-          .then(res => { setCart(res.data); })
+          .then(res => { 
+            if (isMounted) setCart(res.data); 
+          })
+          .catch(err => console.error(err));
+
+        // উইশলিস্ট ডেটা ফেচ
+        axiosPublic.get(`/wishlist?email=${user.email}`)
+          .then(res => { 
+            if (isMounted) setWishlist(res.data); 
+          })
           .catch(err => console.error(err));
       } else {
-        setCart([]);
+        if (isMounted) {
+          setCart([]);
+          setWishlist([]);
+        }
       }
     };
 
-    fetchCart(); // প্রথমবার লোড হওয়ার সময়
-
-    // কাস্টম ইভেন্ট শোনা (যাতে প্রোডাক্ট যোগ করলেই সাথে সাথে আপডেট হয়)
-    window.addEventListener('cartUpdated', fetchCart);
+    fetchCartAndWishlist();
+    
+    // ইভেন্ট লিসেনারগুলো যুক্ত করা হলো যাতে অটো আপডেট হয়
+    window.addEventListener('cartUpdated', fetchCartAndWishlist);
+    window.addEventListener('wishlistUpdated', fetchCartAndWishlist);
 
     return () => {
-      window.removeEventListener('cartUpdated', fetchCart);
+      isMounted = false;
+      window.removeEventListener('cartUpdated', fetchCartAndWishlist);
+      window.removeEventListener('wishlistUpdated', fetchCartAndWishlist);
     };
   }, [axiosPublic, user?.email]);
 
   return (
-    <nav className="bg-white sticky top-0 z-50">
-      {/* Main Container */}
+    <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
           {/* ১. লোগো */}
-          <div className="flex-shrink-0">
-            <Link to="/" className="text-2xl font-black text-blue-600 tracking-wider">
-              BILAL<span className="text-gray-800">ZONE</span>
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center">
+              <img 
+                src="https://i.ibb.co.com/Xr23H5Bv/Whats-App-Image-2026-08-26-at-10-44-30-AM-removebg-preview.png" 
+                alt="BILAL ZONE" 
+                className="h-10 sm:h-12 w-auto object-contain rounded-xl"
+              />
+              <h1 className='text-[#DAA520] text-2xl font-bold'>Bilal</h1>
+              <h1 className='text-black text-2xl font-bold'>Zone</h1>
             </Link>
           </div>
 
-          {/* ২. সার্চ বার (ডেস্কটপ) */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
+          {/* ২. নেভিগেশন লিংক (ডেস্কটপ) */}
+          <nav className="hidden md:flex items-center space-x-8 font-semibold text-xs tracking-wider uppercase">
+            <NavLink to="/" className={activeLinkStyle}>Home</NavLink>
+            <NavLink to="/products" className={activeLinkStyle}>Shop</NavLink>
+            <NavLink to="/contactUs" className={activeLinkStyle}>Contact</NavLink>
+            {user && (
+              <NavLink to="/dashboard" className={activeLinkStyle}>Dashboard</NavLink>
+            )}
+          </nav>
+
+          {/* ৩. সার্চ বার, উইশলিস্ট, কার্ট এবং প্রোফাইল (ডেস্কটপ) */}
+          <div className="hidden md:flex items-center space-x-4">
+            
+            {/* সার্চ ইনপুট */}
+            <form onSubmit={handleSearch} className="relative">
               <input
                 type="text"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                placeholder="Search products..."
-                className="w-full bg-gray-100 text-sm text-gray-800 px-4 py-2 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 border border-transparent focus:bg-white transition-all"
+                placeholder="Search"
+                className="bg-slate-50 text-xs text-slate-800 px-3.5 py-1.5 pr-8 rounded-full focus:outline-none focus:ring-1 focus:ring-orange-500 border border-slate-200 w-44 transition-all"
               />
-              <button type="submit" className="absolute right-3 top-2.5 text-gray-500 text-lg hover:text-blue-600 focus:outline-none">
-                <FiSearch />
+              <button type="submit" className="absolute right-2.5 top-2 text-slate-400 hover:text-orange-500">
+                <FiSearch className="text-sm" />
               </button>
-            </div>
-          </form>
+            </form>
 
-          {/* ৩. নেভিগেশন লিংক (ডেস্কটপ) */}
-          <div className="hidden md:flex items-center space-x-6 font-medium text-sm">
-            <NavLink to="/" className={activeLinkStyle}>Home</NavLink>
-            <NavLink to="/products" className={activeLinkStyle}>Shop</NavLink>
-            <NavLink to="/contactUs" className={activeLinkStyle}>Contact-Us</NavLink>
-            {user && (
-              <NavLink to="/dashboard" className={activeLinkStyle}>Dashboard</NavLink>
-            )}
-          </div>
-
-          {/* ৪. রাইট সাইড আইকন + প্রোফাইল ড্রপডাউন (ডেস্কটপ) */}
-          <div className="hidden md:flex items-center space-x-5 ml-6">
-            {/* কার্ট আইকন */}
-            <Link to="/cart" className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors">
-              <FiShoppingCart className="text-2xl" />
-              {cart.length > 0 && (
-                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold">
-                  {cart.length}
-                </span>
-              )}
-            </Link>
-
-            {/* প্রোফাইল স্টেট */}
+            {/* My Account / User Profile Picture */}
             {user ? (
               <div className="relative">
                 <button
                   onClick={() => setProfileOpen(!profileOpen)}
-                  className="flex items-center justify-center bg-blue-100 text-blue-600 font-bold w-9 h-9 rounded-full border border-blue-200 hover:shadow-md transition-all focus:outline-none"
+                  className="flex items-center space-x-2 text-xs font-semibold text-slate-700 hover:text-orange-600 focus:outline-none cursor-pointer"
                 >
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt="User" className="w-full h-full rounded-full object-cover" />
+                  {user?.photoURL ? (
+                    <img 
+                      src={user.photoURL} 
+                      alt="Profile" 
+                      className="w-8 h-8 rounded-full object-cover border-2 border-orange-500 shadow-sm" 
+                    />
                   ) : (
-                    user.displayName ? user.displayName.charAt(0).toUpperCase() : <FiUser />
+                    <div className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
+                      <FiUser className="text-base" />
+                    </div>
                   )}
+                  <span className="truncate max-w-[100px]">{user?.displayName || "Account"}</span>
                 </button>
 
                 {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 z-50">
-                    <div className="px-4 py-2 border-b border-gray-50">
-                      <p className="text-xs text-gray-400 font-semibold uppercase">Logged in as</p>
-                      <p className="text-sm font-bold text-gray-800 truncate">{user.displayName || "User"}</p>
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 z-50">
+                    <div className="px-4 py-2 border-b border-slate-50">
+                      <p className="text-[10px] text-slate-400 font-semibold uppercase">Logged in as</p>
+                      <p className="text-xs font-bold text-slate-800 truncate">{user.displayName || "User"}</p>
                     </div>
                     
-                    <Link to="/dashboard" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-all">
+                    <Link to="/dashboard" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-xs text-slate-600 hover:bg-slate-50 hover:text-orange-600 transition-all">
                       <FiLayout /> Dashboard
                     </Link>
 
-                    <button onClick={handleLogOut} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-all font-semibold">
+                    <button onClick={handleLogOut} className="w-full flex items-center gap-2 px-4 py-2 text-xs text-red-600 hover:bg-red-50 transition-all font-semibold cursor-pointer">
                       <FiLogOut /> Log Out
                     </button>
                   </div>
                 )}
               </div>
             ) : (
-              <Link to="/login" className="p-2 text-gray-700 hover:text-blue-600 transition-colors">
-                <FiUser className="text-2xl" />
+              <Link to="/login" className="flex items-center space-x-1 text-xs font-semibold text-slate-700 hover:text-orange-600 transition-colors">
+                <FiUser className="text-base" />
+                <span>My Account</span>
               </Link>
             )}
+
+            {/* Wishlist Icon with Badge */}
+            <Link to="/wishlist" className="relative text-slate-700 hover:text-orange-600 transition-colors">
+              <FiHeart className="text-base" />
+              {wishlist.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
+                  {wishlist.length}
+                </span>
+              )}
+            </Link>
+
+            {/* Cart Icon with Badge */}
+            <Link to="/cart" className="relative text-slate-700 hover:text-orange-600 transition-colors">
+              <FiShoppingCart className="text-base" />
+              {cart.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
+                  {cart.length}
+                </span>
+              )}
+            </Link>
           </div>
 
-          {/* ৫. মোবাইল মেনু বাটন */}
-          <div className="md:hidden flex items-center space-x-4">
-            <Link to="/cart" className="relative p-2 text-gray-700">
-              <FiShoppingCart className="text-xl" />
+          {/* ৪. মোবাইল মেনু বাটন ও কার্ট/উইশলিস্ট */}
+          <div className="md:hidden flex items-center space-x-3">
+            {/* মোবাইল উইশলিস্ট */}
+            <Link to="/wishlist" className="relative p-1 text-slate-700">
+              <FiHeart className="text-lg" />
+              {wishlist.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-bold">
+                  {wishlist.length}
+                </span>
+              )}
+            </Link>
+
+            {/* মোবাইল কার্ট */}
+            <Link to="/cart" className="relative p-1 text-slate-700">
+              <FiShoppingCart className="text-lg" />
               {cart.length > 0 && (
-                <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
+                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-bold">
                   {cart.length}
                 </span>
               )}
             </Link>
 
-            <button onClick={() => setNavOpen(!navOpen)} className="text-gray-700 hover:text-blue-600 focus:outline-none">
+            <button onClick={() => setNavOpen(!navOpen)} className="text-slate-700 hover:text-orange-600 focus:outline-none">
               {navOpen ? <FiX className="text-2xl" /> : <FiMenu className="text-2xl" />}
             </button>
           </div>
@@ -182,39 +234,49 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* ৬. মোবাইল ড্রপডাউন মেনু */}
+      {/* ৫. মোবাইল ড্রপডাউন মেনু */}
       {navOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 transition-all duration-300">
-          <div className="px-4 pt-2 pb-6 space-y-2 font-medium">
+        <div className="md:hidden bg-white border-t border-slate-100 transition-all duration-300">
+          <div className="px-4 pt-3 pb-6 space-y-2 font-medium text-xs">
             <NavLink to="/" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Home</NavLink>
             <NavLink to="/products" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Shop</NavLink>
+            <NavLink to="/contactUs" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Contact</NavLink>
 
             {user ? (
               <>
-                <div className="px-3 py-2 bg-blue-50/50 rounded-xl my-2">
-                  <p className="text-[10px] text-blue-500 font-bold uppercase tracking-wider">Signed in as</p>
-                  <p className="text-sm font-black text-gray-800 truncate">{user.displayName || user.email}</p>
+                <div className="flex items-center gap-3 px-3 py-2 bg-orange-50/50 rounded-xl my-2">
+                  {user?.photoURL ? (
+                    <img src={user.photoURL} alt="Profile" className="w-9 h-9 rounded-full object-cover border border-orange-400" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-orange-200 text-orange-700 flex items-center justify-center font-bold">
+                      <FiUser />
+                    </div>
+                  )}
+                  <div className="overflow-hidden">
+                    <p className="text-[10px] text-orange-500 font-bold uppercase tracking-wider">Signed in as</p>
+                    <p className="text-xs font-black text-slate-800 truncate">{user.displayName || user.email}</p>
+                  </div>
                 </div>
                 <NavLink to="/dashboard" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Dashboard</NavLink>
-                <button onClick={handleLogOut} className="w-full text-left block px-3 py-2 rounded-xl text-red-600 hover:bg-red-50 font-bold">
+                <button onClick={handleLogOut} className="w-full text-left block px-3 py-2 rounded-xl text-red-600 hover:bg-red-50 font-bold cursor-pointer">
                   Log Out
                 </button>
               </>
             ) : (
-              <NavLink to="/login" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Login / Profile</NavLink>
+              <NavLink to="/login" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Login / My Account</NavLink>
             )}
             
             {/* মোবাইল সার্চ বার */}
-            <form onSubmit={handleSearch} className="pt-4 border-t border-gray-50">
+            <form onSubmit={handleSearch} className="pt-3 border-t border-slate-100">
               <div className="relative w-full">
                 <input
                   type="text"
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   placeholder="Search products..."
-                  className="w-full bg-gray-100 text-sm text-gray-800 px-4 py-2.5 pr-10 rounded-xl focus:outline-none focus:bg-white border border-transparent focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-slate-50 text-xs text-slate-800 px-3.5 py-2 pr-8 rounded-xl focus:outline-none border border-slate-200"
                 />
-                <button type="submit" className="absolute right-3 top-3 text-gray-500">
+                <button type="submit" className="absolute right-3 top-2.5 text-slate-400">
                   <FiSearch />
                 </button>
               </div>
@@ -222,7 +284,7 @@ const Navbar = () => {
           </div>
         </div>
       )}
-    </nav>
+    </header>
   );
 };
 

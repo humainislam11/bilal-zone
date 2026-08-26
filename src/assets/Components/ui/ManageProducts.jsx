@@ -44,7 +44,7 @@ const ManageProducts = () => {
         setIsModalOpen(true);
     };
 
-    // ছবি পরিবর্তনের সময় প্রিভিউ দেখানোর ফাংশন
+    // ছবি পরিবর্তনের সময় প্রিভিউ দেখানোর ফাংশন
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -62,7 +62,7 @@ const ManageProducts = () => {
             let imageUrl = currentProduct.image;
             let imagesArray = currentProduct.images || [];
 
-            // যদি নতুন ছবি সিলেক্ট করা হয়ে থাকে, তবে ক্লাউডিনারিতে আপলোড হবে
+            // যদি নতুন ছবি সিলেক্ট করা হয়ে থাকে, তবে ক্লাউডিনারিতে আপলোড হবে
             if (selectedFile) {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
@@ -82,12 +82,20 @@ const ManageProducts = () => {
                 imagesArray = [imageUrl, ...imagesArray.filter(img => img !== imageUrl)];
             }
 
+            // 🌟 কালার এবং সাইজ ইনপুট হ্যান্ডেলিং (স্ট্রিং থেকে অ্যারে বা সাধারণ টেক্সট কনভার্শন)
+            const rawColors = e.target.colors.value;
+            const colorsArray = rawColors 
+                ? rawColors.split(',').map(c => c.trim()).filter(c => c !== '') 
+                : [];
+
             const updatedData = {
                 name: e.target.name.value,
                 price: parseFloat(e.target.price.value),
                 discountPrice: e.target.discountPrice.value ? parseFloat(e.target.discountPrice.value) : null,
                 category: e.target.category.value,
                 stock: parseInt(e.target.stock.value),
+                colors: colorsArray, // অ্যারে আকারে পাঠানো হচ্ছে
+                size: e.target.size.value, // সাইজ ফিল্ড
                 description: e.target.description.value,
                 image: imageUrl,
                 images: imagesArray
@@ -325,13 +333,36 @@ const ManageProducts = () => {
                                 </div>
                             </div>
 
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Category</label>
+                                    <input 
+                                        type="text" 
+                                        name="category"
+                                        defaultValue={currentProduct.category}
+                                        required
+                                        className="w-full p-3 bg-gray-50 rounded-xl border text-gray-800 text-sm focus:ring-2 focus:ring-orange-400 focus:outline-none" 
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Colors (Comma separated)</label>
+                                    <input 
+                                        type="text" 
+                                        name="colors"
+                                        defaultValue={Array.isArray(currentProduct.colors) ? currentProduct.colors.join(', ') : (currentProduct.colors || '')}
+                                        placeholder="Black, Pink, Red"
+                                        className="w-full p-3 bg-gray-50 rounded-xl border text-gray-800 text-sm focus:ring-2 focus:ring-orange-400 focus:outline-none" 
+                                    />
+                                </div>
+                            </div>
+
                             <div>
-                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Category</label>
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Size (e.g. S, M, L, XL or Free Size)</label>
                                 <input 
                                     type="text" 
-                                    name="category"
-                                    defaultValue={currentProduct.category}
-                                    required
+                                    name="size"
+                                    defaultValue={currentProduct.size || ''}
+                                    placeholder="S, M, L, XL, XXL"
                                     className="w-full p-3 bg-gray-50 rounded-xl border text-gray-800 text-sm focus:ring-2 focus:ring-orange-400 focus:outline-none" 
                                 />
                             </div>

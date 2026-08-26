@@ -23,6 +23,7 @@ import MakeAnnouncement from "../Components/ui/MakeAnnouncement";
 import ReportedComments from "../Components/ui/ReportedComments";
 import ContactUs from "../Components/ui/ContactUs";
 import AdminMessages from "../Components/ui/AdminMessages";
+import Wishlist from "../Components/ui/Wishlist";
 
 const router = createBrowserRouter([
     {
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
             },{
                 path: '/register',
                 element: <Register></Register>
+            },
+            {
+             path: 'wishlist',
+             element: <PrivateRoot><Wishlist></Wishlist></PrivateRoot>
             },
             {
                 path: '/contactUs',

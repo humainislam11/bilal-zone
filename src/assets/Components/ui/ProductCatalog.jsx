@@ -7,12 +7,15 @@ const ProductCatalog = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stockFilter, setStockFilter] = useState("All");
-  const [categoryFilter, setCategoryFilter] = useState("All");
 
   const axiosPublic = useAxiosPublic();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('search') || '';
+  const categoryQuery = queryParams.get('category') || '';
+
+  // 🌟 সরাসরি ইনিশিয়াল স্টেটে ক্যাটাগরি সেট করা হলো
+  const [categoryFilter, setCategoryFilter] = useState(categoryQuery || "All");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -43,7 +46,7 @@ const ProductCatalog = () => {
     return matchesSearch && matchesCategory && matchesStock;
   });
 
-  // 🌟 ভিন্ন ভিন্ন ক্যাটাগরির একটি করে প্রোডাক্ট প্রথমে নিয়ে আসার সর্টিং লজিক (যখন ক্যাটাগরি "All" থাকে)
+  // ভিন্ন ভিন্ন ক্যাটাগরির একটি করে প্রোডাক্ট প্রথমে নিয়ে আসার সর্টিং লজিক
   const getSortedProducts = () => {
     if (categoryFilter !== "All") return filteredProducts;
 
@@ -52,9 +55,9 @@ const ProductCatalog = () => {
 
     filteredProducts.forEach(product => {
       if (!map.has(product.category)) {
-        map.set(product.category, product); // প্রতিটি ক্যাটাগরি থেকে প্রথম প্রোডাক্টটি রাখব
+        map.set(product.category, product);
       } else {
-        others.push(product); // বাকিগুলো আলাদা রাখব
+        others.push(product);
       }
     });
 
@@ -88,7 +91,7 @@ const ProductCatalog = () => {
           )}
         </div>
 
-        {/* 🌟 ডাইনামিক ক্যাটাগরি ট্যাব বাটনগুলো (Clickable Pills) */}
+        {/* ক্যাটাগরি ট্যাব বাটন */}
         <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 no-scrollbar">
           {dynamicCategories.map((cat) => (
             <button
@@ -105,14 +108,13 @@ const ProductCatalog = () => {
           ))}
         </div>
 
-        {/* 🎛️ স্টক ফিল্টার বার */}
+        {/* স্টক ফিল্টার বার */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3.5 sm:p-4 mb-6 sm:mb-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-2 text-gray-400 font-bold text-[11px] sm:text-xs uppercase tracking-wider">
             <FiGrid className="text-sm" /> Availability Filter:
           </div>
 
           <div className="flex items-center gap-3 justify-between sm:justify-end">
-            {/* 🔽 স্টক ফিল্টার ড্রপডাউন */}
             <div className="relative flex-1 sm:min-w-[180px]">
               <select
                 value={stockFilter}
@@ -128,7 +130,6 @@ const ProductCatalog = () => {
               <FiChevronDown className="absolute right-3 top-3 sm:top-3.5 text-gray-400 pointer-events-none text-base" />
             </div>
 
-            {/* 🔄 ক্লিয়ার ফিল্টার বাটন */}
             {(categoryFilter !== "All" || stockFilter !== "All") && (
               <button
                 onClick={() => { setCategoryFilter("All"); setStockFilter("All"); }}
@@ -140,9 +141,9 @@ const ProductCatalog = () => {
           </div>
         </div>
 
-        {/* 📦 প্রোডাক্ট গ্রিড লেআউট (মোবাইলে ২ কলাম: grid-cols-2) */}
+        {/* প্রোডাক্ট গ্রিড */}
         {displayedProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-6">
             {displayedProducts.map((product) => {
               const displayPrice = product.discountPrice || product.price;
               const hasDiscount = product.discountPrice && product.discountPrice < product.price;

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import useAxiosPublic from '../../hooks/useAxiosPublic'; 
-import { FiCheckCircle, FiClock, FiX, FiShoppingBag, FiUser, FiMapPin, FiPhone, FiPrinter } from 'react-icons/fi';
+import { FiCheckCircle, FiClock, FiX, FiShoppingBag, FiUser, FiMapPin, FiPhone, FiPrinter, FiMail } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 
 const ManageOrders = () => {
@@ -288,6 +288,7 @@ const ManageOrders = () => {
                   <h4 style={{ margin: '0 0 5px 0', fontSize: '14px' }}>Customer Information:</h4>
                   <p style={{ margin: 0, fontSize: '13px' }}><strong>Name:</strong> {selectedOrder.customerName}</p>
                   <p style={{ margin: '3px 0', fontSize: '13px' }}><strong>Phone:</strong> {selectedOrder.phone}</p>
+                  <p style={{ margin: '3px 0', fontSize: '13px' }}><strong>Email:</strong> {selectedOrder.email || 'N/A'}</p>
                   <p style={{ margin: 0, fontSize: '13px' }}><strong>Address:</strong> {selectedOrder.address}, {selectedOrder.city}</p>
                 </div>
 
@@ -326,7 +327,7 @@ const ManageOrders = () => {
               </div>
             </div>
 
-            {/* কাস্টমার ইনফো কার্ড */}
+            {/* কাস্টমার ইনফো কার্ড (এখানে জিমেইল যুক্ত করা হয়েছে) */}
             <div className="bg-gray-50/80 p-4 sm:p-5 rounded-2xl border border-gray-100 space-y-2">
               <div className="flex justify-between items-center">
                 <h3 className="text-xs font-black uppercase text-gray-400 tracking-wider">Customer Information</h3>
@@ -344,6 +345,11 @@ const ManageOrders = () => {
                 <div>
                   <p className="text-xs text-gray-400">Phone</p>
                   <p className="font-bold text-gray-900 text-xs sm:text-sm">{selectedOrder.phone}</p>
+                </div>
+                {/* বায়ারের জিমেইল ফিল্ড */}
+                <div className="sm:col-span-2">
+                  <p className="text-xs text-gray-400 flex items-center gap-1"><FiMail size={12} /> Email</p>
+                  <p className="font-bold text-blue-600 text-xs sm:text-sm">{selectedOrder.email || 'N/A'}</p>
                 </div>
                 <div className="sm:col-span-2">
                   <p className="text-xs text-gray-400">Delivery Address</p>

@@ -1,38 +1,41 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 const Banner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // SRS রিকোয়ারমেন্ট অনুযায়ী ক্যাটাগরি ও অফার ভিত্তিক স্লাইড ডাটা
+  // স্ক্রিনশটের ডিজাইন অনুযায়ী স্লাইড ডাটা
   const slides = [
     {
-      badge: "Featured Products - 2026",
-      title: "Next-Gen Smart Gadgets",
-      description: "Explore our curated collection of premium gadgets, smart electronics, and tech accessories with active discounts.",
-      btnText: "Explore Gadgets",
+      badge: "SUMMER SALE",
+      title: "BILAL ZONE",
+      description: "Discover our exclusive summer collection with massive discounts on electronics, gadgets, and lifestyle items.",
+      btnText: "SHOP NOW",
       link: "/products",
-      bgGradient: "from-slate-950 via-blue-950 to-slate-950",
-      image: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?q=80&w=600&auto=format&fit=crop"
+      bgGradient: "from-sky-100 via-blue-50 to-sky-200",
+      accentColor: "text-blue-900",
+      image: "https://i.ibb.co.com/q351gQrL/Chat-GPT-Image-Aug-26-2026-10-42-04-AM.png"
     },
     {
-      badge: "New Arrivals",
-      title: "Trendy Fashion & Lifestyle",
-      description: "Upgrade your wardrobe with Billal Zone's exclusive new arrivals. High-quality materials tailored for you.",
-      btnText: "Shop Fashion",
+      badge: "EXCLUSIVE DEALS",
+      title: "TRENDING GADGETS",
+      description: "Upgrade your tech game with high-performance smart gadgets and wireless accessories at unbeatable prices.",
+      btnText: "EXPLORE NOW",
       link: "/products",
-      bgGradient: "from-neutral-950 via-purple-950 to-neutral-950",
-      image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=600&auto=format&fit=crop"
+      bgGradient: "from-blue-50 via-sky-100 to-indigo-100",
+      accentColor: "text-blue-600",
+      image: "https://i.ibb.co.com/PGvwWJxc/Chat-GPT-Image-Aug-26-2026-10-34-42-AM-removebg-preview.png"
     },
     {
-      badge: "Exclusive Deal",
-      title: "Unmatched Audio Zone",
-      description: "Get active noise-canceling headphones and wireless earbuds at unbeatable prices. Free delivery included!",
-      btnText: "Grab Offer",
+      badge: "NEW ARRIVALS",
+      title: "SMART LIFESTYLE",
+      description: "Explore top-rated products crafted to simplify your daily routine with style and reliability.",
+      btnText: "DISCOVER",
       link: "/products",
-      bgGradient: "from-blue-950 via-slate-950 to-indigo-950",
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=600&auto=format&fit=crop"
+      bgGradient: "from-sky-50 via-teal-50 to-blue-100",
+      accentColor: "text-teal-600",
+      image: "https://i.ibb.co.com/99LhqhxF/Chat-GPT-Image-Aug-26-2026-10-38-23-AM.png"
     }
   ];
 
@@ -54,48 +57,48 @@ const Banner = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-6">
-      {/* মেইন ব্যানার ফ্রেম */}
-      <div className="relative h-[460px] sm:h-[480px] md:h-[420px] w-full rounded-2xl overflow-hidden shadow-2xl group">
+      {/* মেইন ব্যানার ফ্রেম (স্ক্রিনশটের মতো অনুপাত) */}
+      <div className="relative h-[280px] sm:h-[340px] md:h-[320px] w-full rounded-xl overflow-hidden shadow-sm group bg-white border border-slate-200">
         
         {/* স্লাইডসমূহ */}
         {slides.map((slide, index) => (
           <div
             key={index}
-            className={`absolute inset-0 w-full h-full bg-gradient-to-r ${slide.bgGradient} transition-opacity duration-1000 ease-in-out flex flex-col md:flex-row items-center justify-between px-6 sm:px-12 md:px-20 py-8 gap-6 ${
+            className={`absolute inset-0 w-full h-full bg-gradient-to-r ${slide.bgGradient} transition-opacity duration-1000 ease-in-out flex flex-col md:flex-row items-center justify-between px-6 sm:px-12 md:px-16 py-6 ${
               index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
             }`}
           >
             {/* বামপাশ: টেক্সট কন্টেন্ট */}
-            <div className="flex-1 text-center md:text-left text-white space-y-4 md:space-y-5 max-w-xl">
-              <span className="inline-block bg-white/10 backdrop-blur-md text-blue-400 text-xs font-bold tracking-widest uppercase px-3 py-1.5 rounded-full border border-white/20">
+            <div className="flex-1 text-center md:text-left space-y-2 z-10">
+              <h3 className="text-sm sm:text-lg md:text-xl font-black tracking-widest uppercase  text-[#DAA520]">
                 {slide.badge}
-              </span>
+              </h3>
               
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
-                {slide.title}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight  text-[#DAA520] leading-none">
+                BILAL <span className="text-slate-900">ZONE</span>
               </h1>
               
-              <p className="text-gray-300 text-sm sm:text-base font-light leading-relaxed">
+              <p className="text-slate-600 text-xs sm:text-sm font-medium max-w-sm hidden sm:block leading-relaxed">
                 {slide.description}
               </p>
               
               <div className="pt-2">
                 <Link
                   to={slide.link}
-                  className="inline-block bg-blue-600 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition-all duration-200 active:scale-95"
+                  className="inline-block bg-[#112244] hover:bg-blue-900 text-white font-bold text-xs tracking-wider px-5 py-2.5 rounded-md shadow transition-all duration-200 active:scale-95"
                 >
                   {slide.btnText}
                 </Link>
               </div>
             </div>
 
-            {/* ডানপাশ: ইমেজ ফ্রেম */}
-            <div className="flex-1 flex justify-center items-center w-full max-w-[260px] sm:max-w-[300px] md:max-w-none">
-              <div className="relative p-2 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm">
+            {/* ডানপাশ: ইমেজ ফ্রেম (স্ক্রিনশটের মতো ফ্রেমে বাঁধানো ব্যানার ইমেজ) */}
+            <div className="flex-1 flex justify-center md:justify-end items-center w-full h-full">
+              <div className="">
                 <img
                   src={slide.image}
                   alt={slide.title}
-                  className="w-full h-[160px] sm:h-[200px] md:h-[260px] object-cover rounded-xl shadow-md"
+                  className=""
                 />
               </div>
             </div>
@@ -105,26 +108,26 @@ const Banner = () => {
         {/* নেভিগেশন কন্ট্রোল বাটন (বামে ও ডানে) */}
         <button
           onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-1.5 text-slate-600 hover:text-black bg-white/70 hover:bg-white rounded-full shadow transition-all"
         >
-          <FiChevronLeft className="text-2xl" />
+          <FiChevronLeft className="text-xl font-bold" />
         </button>
 
         <button
           onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-1.5 text-slate-600 hover:text-black bg-white/70 hover:bg-white rounded-full shadow transition-all"
         >
-          <FiChevronRight className="text-2xl" />
+          <FiChevronRight className="text-xl font-bold" />
         </button>
 
         {/* ইন্ডিকেটর ডটস */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex space-x-1.5">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`h-2.5 rounded-full transition-all duration-300 ${
-                index === currentSlide ? "w-7 bg-blue-500" : "w-2.5 bg-white/40"
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                index === currentSlide ? "w-5 bg-blue-600" : "w-1.5 bg-slate-400/60"
               }`}
             />
           ))}
