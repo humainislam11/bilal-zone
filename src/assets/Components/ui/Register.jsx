@@ -20,94 +20,97 @@ const Register = () => {
   
   const [step, setStep] = useState(1);
   const [otpCode, setOtpCode] = useState('');
-  const [serverOtp, setServerOtp] = useState('');
 
   const navigate = useNavigate();
 
   // ধাপ ১: ওটিপি পাঠানোর জন্য
   const handleRegister = async (e) => {
-    e.preventDefault();
-    setError('');
+  e.preventDefault();
+  setError('');
 
-    if (password !== confirmPassword) {
-      return setError("Passwords do not match!");
-    }
+  if (password !== confirmPassword) {
+    return setError("Passwords do not match!");
+  }
 
-    if (password.length < 6) {
-      return setError("Password should be at least 6 characters.");
-    }
+  if (password.length < 6) {
+    return setError("Password should be at least 6 characters.");
+  }
 
-    setLoading(true);
-    try {
-      const otpRes = await axiosPublic.post('/send-otp', { email });
-      
-      if (otpRes.data.success) {
-        setServerOtp(otpRes.data.otp);
-        setStep(2);
-        Swal.fire({
-          icon: "success",
-          title: "OTP Sent!",
-          text: "A 6-digit verification code has been sent to your Gmail.",
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      setError('Failed to send verification email. Try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ধাপ ২: ওটিপি ভেরিফাই করে ফায়ারবেসে অ্যাকাউন্ট তৈরি, ব্যাকএন্ড থেকে টোকেন নেওয়া এবং ডাটা সেভ করা
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      if (otpCode !== serverOtp) {
-        setLoading(false);
-        return setError("Invalid OTP Code! Please check your Gmail.");
-      }
-
-      // ১. ফায়ারবেসে ইউজার তৈরি করা
-      const result = await createUser(email, password);
-      const loggedUser = result.user;
-
-      // ২. ব্যাকএন্ডের /jwt রাউট থেকে নিজস্ব টোকেন জেনারেট করে নেওয়া
-      const resToken = await axiosPublic.post('/jwt', { email: loggedUser.email });
-      const token = resToken.data.token;
-      
-      // লোকাল স্টোরেজে টোকেন সেভ করে রাখা
-      localStorage.setItem('access-token', token);
-
-      // ৩. ডাটাবেজে ইউজার পাঠানো (সাথে হেডার-এ টোকেন যুক্ত করা)
-      const userInfo = { name, email };
-      await axiosPublic.post('/users', userInfo, {
-        headers: {
-          authorization: `Bearer ${token}`
-        }
-      });
-      
+  setLoading(true);
+  try {
+    const otpRes = await axiosPublic.post('/send-otp', { email });
+    
+    if (otpRes.data.success) {
+      // setServerOtp(otpRes.data.otp);  ❌ আর দরকার নেই, backend আর otp পাঠায় না
+      setStep(2);
       Swal.fire({
         icon: "success",
-        title: "Register successfully!",
-        showConfirmButton: false,
-        timer: 1500,
+        title: "OTP Sent!",
+        text: "A 6-digit verification code has been sent to your Gmail.",
       });
-
-      navigate('/'); 
-    } catch (err) {
-      console.error(err);
-      if (err.code === 'auth/email-already-in-use') {
-        setError('This email is already registered. Try signing in.');
-      } else {
-        setError('Failed to create an account. Please try again.');
-      }
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (err) {
+    console.error(err);
+    setError('Failed to send verification email. Try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
+  // ধাপ ২: ওটিপি ভেরিফাই করে ফায়ারবেসে অ্যাকাউন্ট তৈরি, ব্যাকএন্ড থেকে টোকেন নেওয়া এবং ডাটা সেভ করা
+ const handleVerifyOtp = async (e) => {
+  e.preventDefault();
+  setError('');
+  setLoading(true);
+
+  try {
+    // ✅ ব্যাকএন্ডে verify করা, লোকালি compare না করে
+    const verifyRes = await axiosPublic.post('/verify-otp', { email, otp: otpCode });
+
+    if (!verifyRes.data.success) {
+      setLoading(false);
+      return setError(verifyRes.data.message || "Invalid OTP Code! Please check your Gmail.");
+    }
+
+    // ১. ফায়ারবেসে ইউজার তৈরি করা
+    const result = await createUser(email, password);
+    const loggedUser = result.user;
+
+    // ২. ব্যাকএন্ডের /jwt রাউট থেকে নিজস্ব টোকেন জেনারেট করে নেওয়া
+    const resToken = await axiosPublic.post('/jwt', { email: loggedUser.email });
+    const token = resToken.data.token;
+
+    localStorage.setItem('access-token', token);
+
+    // ৩. ডাটাবেজে ইউজার পাঠানো
+    const userInfo = { name, email };
+    await axiosPublic.post('/users', userInfo, {
+      headers: {
+        authorization: `Bearer ${token}`
+      }
+    });
+
+    Swal.fire({
+      icon: "success",
+      title: "Register successfully!",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+
+    navigate('/');
+  } catch (err) {
+    console.error(err);
+    if (err.response?.data?.message) {
+      setError(err.response.data.message);
+    } else if (err.code === 'auth/email-already-in-use') {
+      setError('This email is already registered. Try signing in.');
+    } else {
+      setError('Failed to create an account. Please try again.');
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleGoogleLogin = async () => {
     setError('');
