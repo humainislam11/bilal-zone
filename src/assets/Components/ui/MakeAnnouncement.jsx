@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import useAxiosPublic from '../../hooks/useAxiosPublic';
 import { FiBell, FiSend, FiTrash2, FiCalendar, FiVolume2 } from 'react-icons/fi';
 import Swal from 'sweetalert2';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 
 const MakeAnnouncement = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -9,13 +9,13 @@ const MakeAnnouncement = () => {
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
 
   // ডাটা ফেচ করার জন্য useEffect
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const res = await axiosPublic.get('/announcements');
+        const res = await axiosSecure.get('/announcements');
         setAnnouncements(res.data);
       } catch (error) {
         console.error("Error fetching announcements:", error);
@@ -25,12 +25,12 @@ const MakeAnnouncement = () => {
     };
 
     fetchAnnouncements();
-  }, [axiosPublic]);
+  }, [axiosSecure]);
 
   // আলাদা রিফ্রেশ ফাংশন
   const reloadAnnouncements = async () => {
     try {
-      const res = await axiosPublic.get('/announcements');
+      const res = await axiosSecure.get('/announcements');
       setAnnouncements(res.data);
     } catch (error) {
       console.error("Error fetching announcements:", error);
@@ -47,7 +47,7 @@ const MakeAnnouncement = () => {
 
     setSubmitting(true);
     try {
-      const res = await axiosPublic.post('/announcements', {
+      const res = await axiosSecure.post('/announcements', {
         title,
         message,
         date: new Date().toISOString()
@@ -86,7 +86,7 @@ const MakeAnnouncement = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axiosPublic.delete(`/announcements/${id}`);
+          const res = await axiosSecure.delete(`/announcements/${id}`);
           if (res.data.deletedCount > 0 || res.data.success) {
             Swal.fire('Deleted!', 'Announcement has been deleted.', 'success');
             reloadAnnouncements();

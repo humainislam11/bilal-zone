@@ -3,10 +3,10 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../context/AuthContext';
 import { FiShoppingCart, FiUser, FiSearch, FiMenu, FiX, FiLogOut, FiLayout, FiHeart } from 'react-icons/fi';
 import Swal from 'sweetalert2';
-import useAxiosPublic from '../../hooks/useAxiosPublic';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 
 const Navbar = () => {
-  const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
   const [navOpen, setNavOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -60,14 +60,14 @@ const Navbar = () => {
     const fetchCartAndWishlist = () => {
       if (user?.email) {
         // কার্ট ডেটা ফেচ
-        axiosPublic.get(`/cart?email=${user.email}`)
+        axiosSecure.get(`/cart?email=${user.email}`)
           .then(res => { 
             if (isMounted) setCart(res.data); 
           })
           .catch(err => console.error(err));
 
         // উইশলিস্ট ডেটা ফেচ
-        axiosPublic.get(`/wishlist?email=${user.email}`)
+        axiosSecure.get(`/wishlist?email=${user.email}`)
           .then(res => { 
             if (isMounted) setWishlist(res.data); 
           })
@@ -91,7 +91,7 @@ const Navbar = () => {
       window.removeEventListener('cartUpdated', fetchCartAndWishlist);
       window.removeEventListener('wishlistUpdated', fetchCartAndWishlist);
     };
-  }, [axiosPublic, user?.email]);
+  }, [axiosSecure, user?.email]);
 
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
@@ -106,7 +106,7 @@ const Navbar = () => {
                 alt="BILAL ZONE" 
                 className="h-10 sm:h-12 w-auto object-contain rounded-xl"
               />
-              <h1 className='text-[#DAA520] text-2xl font-bold'>Bilal</h1>
+              <h1 className='text-orange-500 text-2xl font-bold'>Bilal</h1>
               <h1 className='text-black text-2xl font-bold'>Zone</h1>
             </Link>
           </div>

@@ -1,15 +1,15 @@
 import  { useEffect, useState, useContext } from 'react';
 import { FiTrash2, FiShoppingCart, FiArrowLeft, FiHeart } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-import useAxiosPublic from '../../hooks/useAxiosPublic';
 import Swal from 'sweetalert2';
 import { AuthContext } from '../../../context/AuthContext';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 
 const Wishlist = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState(null); // কোন আইটেমে কাজ চলছে তা ট্র্যাক করার জন্য
-  const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ const Wishlist = () => {
 
     const fetchWishlist = () => {
       if (user?.email) {
-        axiosPublic.get(`/wishlist?email=${user.email}`)
+        axiosSecure.get(`/wishlist?email=${user.email}`)
           .then(res => {
             if (isMounted) {
               setWishlistItems(res.data);
@@ -41,7 +41,7 @@ const Wishlist = () => {
       isMounted = false;
       window.removeEventListener('wishlistUpdated', fetchWishlist);
     };
-  }, [user?.email, axiosPublic]);
+  }, [user?.email, axiosSecure]);
 
   // উইশলিস্ট থেকে আইটেম ডিলিট করার ফাংশন (লোডিং সহ)
   const handleDelete = async (id, e) => {
@@ -58,7 +58,7 @@ const Wishlist = () => {
       if (result.isConfirmed) {
         try {
           setActionLoadingId(id); // লোডিং শুরু
-          const res = await axiosPublic.delete(`/wishlist/${id}`);
+          const res = await axiosSecure.delete(`/wishlist/${id}`);
           if (res.data.deletedCount > 0) {
             Swal.fire({ icon: 'success', title: 'Removed from Wishlist', timer: 1200, showConfirmButton: false });
             setWishlistItems(wishlistItems.filter(item => item._id !== id));
@@ -96,7 +96,7 @@ const Wishlist = () => {
 
     try {
       setActionLoadingId(item._id + 'cart');
-      const res = await axiosPublic.post('/cart', cartItem);
+      const res = await axiosSecure.post('/cart', cartItem);
       if (res.data.message === 'already exists') {
         Swal.fire({ icon: 'warning', title: 'Already in your cart!' });
       } else if (res.data.insertedId || res.data.success) {

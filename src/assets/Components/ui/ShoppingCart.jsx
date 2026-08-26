@@ -1,19 +1,19 @@
 import { useState, useMemo, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { FiPlus, FiMinus, FiTrash2, FiShoppingBag } from 'react-icons/fi';
-import useAxiosPublic from '../../hooks/useAxiosPublic';
 import Swal from 'sweetalert2';
 import { AuthContext } from '../../../context/AuthContext';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 
 const ShoppingCart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
     if (user?.email) {
-      axiosPublic.get(`/cart?email=${user.email}`)
+      axiosSecure.get(`/cart?email=${user.email}`)
         .then(res => { 
           const itemsWithQuantity = res.data.map(item => ({
             ...item,
@@ -27,7 +27,7 @@ const ShoppingCart = () => {
           setLoading(false);
         });
     }
-  }, [axiosPublic, user?.email]);
+  }, [axiosSecure, user?.email]);
 
   const updateQuantity = (id, delta) => {
     setCartItems(prev => prev.map(item =>
@@ -44,7 +44,7 @@ const ShoppingCart = () => {
       confirmButtonText: 'Yes, delete it!' 
     }).then((result) => {
       if (result.isConfirmed) {
-        axiosPublic.delete(`/cart/${id}`).then(res => {
+        axiosSecure.delete(`/cart/${id}`).then(res => {
           if (res.data.deletedCount > 0) {
             setCartItems(prev => prev.filter(item => item._id !== id));
             window.dispatchEvent(new Event('cartUpdated'));

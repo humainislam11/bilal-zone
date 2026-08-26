@@ -2,13 +2,13 @@ import { useLoaderData, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiShoppingCart, FiHeart, FiShare2, FiTruck, FiRotateCcw, FiShield, FiStar, FiCopy, FiCheck, FiFlag } from 'react-icons/fi';
 import { FaFacebook, FaTwitter, FaWhatsapp, FaLinkedin } from 'react-icons/fa';
 import { useContext, useState, useEffect } from 'react';
-import useAxiosPublic from '../../hooks/useAxiosPublic';
 import Swal from 'sweetalert2';
 import { AuthContext } from '../../../context/AuthContext';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 
 const ProductDetails = () => {
   const product = useLoaderData();
-  const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -43,16 +43,16 @@ const ProductDetails = () => {
 
   useEffect(() => {
     if (product?._id) {
-      axiosPublic.get(`/reviews/${product._id}`)
+      axiosSecure.get(`/reviews/${product._id}`)
         .then(res => setReviews(res.data))
         .catch(err => console.error("Error fetching reviews:", err));
     }
-  }, [product?._id, axiosPublic]);
+  }, [product?._id, axiosSecure]);
 
   // উইশলিস্টে অলরেডি আছে কিনা চেক করার জন্য
   useEffect(() => {
     if (user?.email && product?._id) {
-      axiosPublic.get(`/wishlist/check?email=${user.email}&productId=${product._id}`)
+      axiosSecure.get(`/wishlist/check?email=${user.email}&productId=${product._id}`)
         .then(res => {
           if (res.data?.exists) {
             setIsWishlisted(true);
@@ -60,7 +60,7 @@ const ProductDetails = () => {
         })
         .catch(err => console.error("Error checking wishlist:", err));
     }
-  }, [user?.email, product?._id, axiosPublic]);
+  }, [user?.email, product?._id, axiosSecure]);
 
   const handleQuantityChange = (type) => {
     if (type === 'decrease' && quantity > 1) {
@@ -95,7 +95,7 @@ const ProductDetails = () => {
     };
 
     try {
-      const res = await axiosPublic.post('/wishlist', wishlistItem);
+      const res = await axiosSecure.post('/wishlist', wishlistItem);
       if (res.data.message === 'already exists' || res.data.insertedId === undefined) {
         Swal.fire({ icon: 'info', title: 'Already in your Wishlist!', timer: 1500, showConfirmButton: false });
         setIsWishlisted(true);
@@ -132,7 +132,7 @@ const ProductDetails = () => {
     };
 
     try {
-      const res = await axiosPublic.post('/cart', cartItem);
+      const res = await axiosSecure.post('/cart', cartItem);
       if (res.data.message === 'already exists') {
         Swal.fire({ icon: 'warning', title: 'Oops...', text: 'Already in your cart!' });
       } else if (res.data.insertedId || res.data.modifiedCount > 0 || res.data.success) {
@@ -200,7 +200,7 @@ const ProductDetails = () => {
     };
 
     try {
-      const res = await axiosPublic.post('/reviews', newReview);
+      const res = await axiosSecure.post('/reviews', newReview);
       if (res.data.insertedId) {
         Swal.fire({ icon: 'success', title: 'Review added successfully!', timer: 1500, showConfirmButton: false });
         setReviews([{ ...newReview, _id: res.data.insertedId }, ...reviews]);
@@ -229,7 +229,7 @@ const ProductDetails = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axiosPublic.patch(`/reviews/report/${reviewId}`);
+          const res = await axiosSecure.patch(`/reviews/report/${reviewId}`);
           if (res.data.modifiedCount > 0 || res.data.success) {
             Swal.fire("Reported!", "The comment has been reported to the admin.", "success");
             setReviews(reviews.map(rev => rev._id === reviewId ? { ...rev, isReported: true } : rev));

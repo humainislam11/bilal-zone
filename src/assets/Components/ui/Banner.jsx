@@ -70,11 +70,11 @@ const Banner = () => {
           >
             {/* বামপাশ: টেক্সট কন্টেন্ট */}
             <div className="flex-1 text-center md:text-left space-y-2 z-10">
-              <h3 className="text-sm sm:text-lg md:text-xl font-black tracking-widest uppercase  text-[#DAA520]">
+              <h3 className="text-sm sm:text-lg md:text-xl font-black tracking-widest uppercase  text-orange-500">
                 {slide.badge}
               </h3>
               
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight  text-[#DAA520] leading-none">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight  text-orange-500 leading-none">
                 BILAL <span className="text-slate-900">ZONE</span>
               </h1>
               

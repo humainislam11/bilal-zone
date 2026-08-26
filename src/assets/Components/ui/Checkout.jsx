@@ -1,15 +1,15 @@
 import { useState, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../context/AuthContext';
-import useAxiosPublic from '../../hooks/useAxiosPublic';
 import { FaMoneyBillWave, FaMobileAlt, FaMapMarkerAlt, FaShoppingBag, FaTruck, FaShieldAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 
 const Checkout = () => {
     const { user } = useContext(AuthContext);
     const location = useLocation();
     const navigate = useNavigate();
-    const axiosPublic = useAxiosPublic();
+    const axiosSecure = useAxiosSecure();
 
     // Cart / ProductDetails পেজ থেকে পাওয়া ডাটা
     const { totalAmount = 0, cartItems = [] } = location.state || {};
@@ -80,7 +80,7 @@ const Checkout = () => {
         };
 
         try {
-            const res = await axiosPublic.post('/orders', orderInfo);
+            const res = await axiosSecure.post('/orders', orderInfo);
             if (res.data.insertedId || res.data.success) {
                 Swal.fire({
                     icon: 'success',

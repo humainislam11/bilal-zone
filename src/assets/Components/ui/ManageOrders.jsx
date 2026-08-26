@@ -1,13 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
-import useAxiosPublic from '../../hooks/useAxiosPublic'; 
 import { FiCheckCircle, FiClock, FiX, FiShoppingBag, FiUser, FiMapPin, FiPhone, FiPrinter, FiMail } from 'react-icons/fi';
 import Swal from 'sweetalert2';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 
 const ManageOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
   const invoiceRef = useRef();
 
   const DELIVERY_CHARGE = 120; // ডেলিভারি চার্জ 
@@ -16,7 +16,7 @@ const ManageOrders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await axiosPublic.get('/orders'); 
+        const res = await axiosSecure.get('/orders'); 
         setOrders(res.data);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -26,12 +26,12 @@ const ManageOrders = () => {
     };
 
     fetchOrders();
-  }, [axiosPublic]);
+  }, [axiosSecure]);
 
   // আলাদাভাবে রিফ্রেশ করার জন্য ফাংশন
   const reloadOrders = async () => {
     try {
-      const res = await axiosPublic.get('/orders');
+      const res = await axiosSecure.get('/orders');
       setOrders(res.data);
     } catch (error) {
       console.error("Error reloading orders:", error);
@@ -42,7 +42,7 @@ const ManageOrders = () => {
   const handleStatusUpdate = async (id, e) => {
     e.stopPropagation(); // রো-এর ক্লিক ইভেন্ট যেন কাজ না করে
     try {
-      const res = await axiosPublic.patch(`/orders/${id}`, { status: 'approved' });
+      const res = await axiosSecure.patch(`/orders/${id}`, { status: 'approved' });
       if (res.data.modifiedCount > 0 || res.data.success) {
         Swal.fire({
           icon: 'success',
