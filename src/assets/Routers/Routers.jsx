@@ -45,7 +45,7 @@ const router = createBrowserRouter([
             {
                 path: '/products/:id',
                 element: <PrivateRoot><ProductDetails></ProductDetails></PrivateRoot>,
-                loader: ({params})=>fetch(`https://bilalzone-backend.vercel.app/products/${params.id}`)
+                loader: ({params})=>fetch(`https://bilal-zone-backend.vercel.app/products/${params.id}`)
             },{
                 path:'/cart',
                 element:<PrivateRoot><ShoppingCart></ShoppingCart></PrivateRoot>
