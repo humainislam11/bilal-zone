@@ -1,6 +1,7 @@
 import AnnouncementSlider from "./AnnouncementSlider";
 import Banner from "./Banner";
 import BannerGrid from "./BannerGrid";
+import CustomerReviews from "./CustomerReviews";
 import Footer from "./Footer";
 import ProductCatalog from "./ProductCatalog";
 
@@ -13,6 +14,7 @@ const Home = () => {
             
             <ProductCatalog></ProductCatalog>
             <BannerGrid></BannerGrid>
+            <CustomerReviews></CustomerReviews>
             <Footer></Footer>
         </div>
     );

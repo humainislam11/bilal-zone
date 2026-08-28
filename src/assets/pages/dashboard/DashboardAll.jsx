@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BsBagCheckFill, BsClockHistory } from "react-icons/bs";
+import { BsBagCheckFill } from "react-icons/bs";
 import { FaHouseUser, FaRegUserCircle, FaBars, FaTimes, FaBoxOpen, FaClipboardList, FaEnvelopeOpenText } from "react-icons/fa";
 import { GoReport } from "react-icons/go";
 import { IoMdAddCircle } from "react-icons/io";
@@ -72,7 +72,7 @@ const DashboardAll = () => {
                         <>
                             <li><NavLink to='/dashboard/myProfile' onClick={() => setIsSidebarOpen(false)} className={navLinkClass}><FaHouseUser size={18} /> My Profile</NavLink></li>
                             <li><NavLink to='/dashboard/myOrders' onClick={() => setIsSidebarOpen(false)} className={navLinkClass}><BsBagCheckFill size={18} /> My Orders</NavLink></li>
-                            <li><NavLink to='/dashboard/paymentHistory' onClick={() => setIsSidebarOpen(false)} className={navLinkClass}><BsClockHistory size={18} /> Payment History</NavLink></li>
+                            
                         </>
                     )}
                 </ul>

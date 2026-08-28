@@ -1,18 +1,18 @@
 import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../../context/AuthContext';
-import useAxiosPublic from '../../hooks/useAxiosPublic';
 import { FiShoppingBag, FiClock, FiCheckCircle,  FiTrash2, FiPrinter } from 'react-icons/fi';
 import Swal from 'sweetalert2';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 
 const MyOrders = () => {
   const { user } = useContext(AuthContext);
-  const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchOrders = () => {
     if (user?.email) {
-      axiosPublic.get(`/orders?email=${user.email}`)
+      axiosSecure.get(`/my-orders?email=${user.email}`)
         .then(res => {
           // ইউজারের ইমেইল অনুযায়ী ফিল্টার করা
           const userOrders = res.data.filter(order => order.email === user.email);
@@ -28,7 +28,7 @@ const MyOrders = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [axiosPublic, user?.email]);
+  }, [axiosSecure, user?.email]);
 
   const handleCancelOrder = (id, status) => {
     if (status === 'approved' || status === 'Delivered' || status === 'Processing' || status === 'Shipped') {
@@ -49,7 +49,7 @@ const MyOrders = () => {
       confirmButtonText: 'Yes, cancel it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        axiosPublic.delete(`/orders/${id}`)
+        axiosSecure.delete(`/my-orders/${id}`)
           .then(res => {
             if (res.data.deletedCount > 0 || res.data.success) {
               setOrders(prev => prev.filter(order => order._id !== id));

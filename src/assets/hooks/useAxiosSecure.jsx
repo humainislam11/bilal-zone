@@ -5,7 +5,7 @@ import { AuthContext } from "../../context/AuthContext";
 
 
 const axiosSecure = axios.create({
-    baseURL: 'https://bilal-zone-backend.vercel.app',
+    baseURL: 'https://bilalzone-backend.xyz',
   });
 const useAxiosSecure = () => {
   const navigate = useNavigate();

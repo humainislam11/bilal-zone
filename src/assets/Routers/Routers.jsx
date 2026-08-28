@@ -18,7 +18,6 @@ import AdminProfile from "../Components/ui/AdminProfile";
 import ManageProducts from "../Components/ui/ManageProducts";
 import UpdateProduct from "../Components/ui/UpdateProduct";
 import MyOrders from "../Components/ui/MyOrders";
-import PaymentHistory from "../Components/ui/PaymentHistory";
 import MakeAnnouncement from "../Components/ui/MakeAnnouncement";
 import ReportedComments from "../Components/ui/ReportedComments";
 import ContactUs from "../Components/ui/ContactUs";
@@ -45,7 +44,7 @@ const router = createBrowserRouter([
             {
                 path: '/products/:id',
                 element: <PrivateRoot><ProductDetails></ProductDetails></PrivateRoot>,
-                loader: ({params})=>fetch(`https://bilal-zone-backend.vercel.app/products/${params.id}`)
+                loader: ({params})=>fetch(`https://bilalzone-backend.xyz/products/${params.id}`)
             },{
                 path:'/cart',
                 element:<PrivateRoot><ShoppingCart></ShoppingCart></PrivateRoot>
@@ -92,9 +91,6 @@ const router = createBrowserRouter([
                      },{
                         path: 'myOrders',
                         element: <MyOrders></MyOrders>
-                     },{
-                        path: 'paymentHistory',
-                        element: <PaymentHistory></PaymentHistory>
                      },{
                        path: 'makeAnnouncement',
                        element: <MakeAnnouncement></MakeAnnouncement>

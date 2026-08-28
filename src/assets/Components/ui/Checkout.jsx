@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../context/AuthContext';
-import { FaMoneyBillWave, FaMobileAlt, FaMapMarkerAlt, FaShoppingBag, FaTruck, FaShieldAlt } from 'react-icons/fa';
+import { FaMoneyBillWave, FaMapMarkerAlt, FaShoppingBag, FaTruck, FaShieldAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 
@@ -14,8 +14,6 @@ const Checkout = () => {
     // Cart / ProductDetails পেজ থেকে পাওয়া ডাটা
     const { totalAmount = 0, cartItems = [] } = location.state || {};
 
-    const [paymentMethod, setPaymentMethod] = useState('cod');
-    const [tranId, setTranId] = useState('');
     const [loading, setLoading] = useState(false);
 
     // কাস্টমার এড্রেস ও ইনফরমেশন
@@ -33,7 +31,7 @@ const Checkout = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // ডেলিভারি চার্জ স্থায়ীভাবে ১২০ টাকা নির্ধারণ করা হলো
+    // ডেলিভারি চার্জ স্থায়ীভাবে ১২০ টাকা নির্ধারণ করা হলো
     const deliveryCharge = 120;
     const finalPrice = totalAmount + deliveryCharge;
 
@@ -51,15 +49,6 @@ const Checkout = () => {
             });
         }
 
-        // বিকাশ পেমেন্টের জন্য Transaction ID চেক
-        if (paymentMethod === 'bkash' && !tranId) {
-            return Swal.fire({
-                icon: 'warning',
-                title: 'Transaction ID Required',
-                text: 'Please enter your bKash Transaction ID to proceed!'
-            });
-        }
-
         setLoading(true);
 
         const orderInfo = {
@@ -73,8 +62,8 @@ const Checkout = () => {
             subtotal: totalAmount,
             deliveryCharge: deliveryCharge,
             totalPrice: finalPrice,
-            paymentMethod: paymentMethod,
-            transactionId: paymentMethod === 'bkash' ? tranId : 'COD',
+            paymentMethod: 'Cash on Delivery',
+            transactionId: 'COD',
             status: 'pending',
             date: new Date()
         };
@@ -108,7 +97,7 @@ const Checkout = () => {
 
                 <form onSubmit={handleConfirmOrder} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
-                    {/* 👈 বাম পাশ: এড্রেস, অর্ডারের আইটেম ও পেমেন্ট মেথড */}
+                    {/* 👈 বাম পাশ: এড্রেস ও অর্ডারের আইটেম */}
                     <div className="lg:col-span-2 space-y-6">
                         
                         {/* ১. Shipping & Delivery Address Card */}
@@ -210,50 +199,15 @@ const Checkout = () => {
                             </div>
                         </div>
 
-                        {/* ৩. Payment Method Selection */}
+                        {/* ৩. Payment Method (Fixed to Cash on Delivery) */}
                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 space-y-4">
-                            <h3 className="font-bold text-lg border-b pb-3 text-gray-800">3. Select Payment Method</h3>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div 
-                                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                                        paymentMethod === 'cod' ? 'border-orange-500 bg-orange-50/40 shadow-sm' : 'border-gray-200 hover:border-gray-300'
-                                    }`}
-                                    onClick={() => setPaymentMethod('cod')}
-                                >
-                                    <div className="flex items-center gap-3 font-bold text-gray-800 text-sm">
-                                        <FaMoneyBillWave className="text-green-600 text-xl" /> Cash on Delivery
-                                    </div>
-                                    <p className="text-xs text-gray-500 mt-2">Pay in cash when your order is delivered to your doorstep.</p>
+                            <h3 className="font-bold text-lg border-b pb-3 text-gray-800">3. Payment Method</h3>
+                            <div className="p-4 rounded-xl border-2 border-orange-500 bg-orange-50/40 shadow-sm">
+                                <div className="flex items-center gap-3 font-bold text-gray-800 text-sm">
+                                    <FaMoneyBillWave className="text-green-600 text-xl" /> Cash on Delivery
                                 </div>
-
-                                <div 
-                                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                                        paymentMethod === 'bkash' ? 'border-pink-500 bg-pink-50/40 shadow-sm' : 'border-gray-200 hover:border-gray-300'
-                                    }`}
-                                    onClick={() => setPaymentMethod('bkash')}
-                                >
-                                    <div className="flex items-center gap-3 font-bold text-pink-600 text-sm">
-                                        <FaMobileAlt className="text-xl" /> bKash Online Payment
-                                    </div>
-                                    <p className="text-xs text-gray-500 mt-2">Fast and secure payment using your bKash wallet.</p>
-                                </div>
+                                <p className="text-xs text-gray-500 mt-2">Pay in cash when your order is delivered to your doorstep.</p>
                             </div>
-
-                            {paymentMethod === 'bkash' && (
-                                <div className="mt-4 p-4 bg-pink-50/60 rounded-xl border border-pink-200 space-y-2">
-                                    <p className="text-xs font-semibold text-gray-700">
-                                        Please send payment to our bKash Merchant Number: <span className="font-bold text-pink-600">01700000000</span>
-                                    </p>
-                                    <input 
-                                        type="text" 
-                                        placeholder="Enter 10-digit bKash Transaction ID (TrxID)" 
-                                        value={tranId} 
-                                        onChange={(e) => setTranId(e.target.value)} 
-                                        className="w-full px-4 py-2.5 rounded-xl border bg-white focus:ring-2 focus:ring-pink-400 outline-none text-sm font-mono uppercase" 
-                                    />
-                                </div>
-                            )}
                         </div>
 
                     </div>

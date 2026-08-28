@@ -150,7 +150,7 @@ const ManageOrders = () => {
                   <th className="p-4 sm:p-5">Customer Info</th>
                   <th className="p-4 sm:p-5">Products</th>
                   <th className="p-4 sm:p-5">Total Amount</th>
-                  <th className="p-4 sm:p-5">Payment & TrxID</th>
+                  <th className="p-4 sm:p-5">Payment Type</th>
                   <th className="p-4 sm:p-5">Status</th>
                   <th className="p-4 sm:p-5 text-center">Action</th>
                 </tr>
@@ -197,16 +197,11 @@ const ManageOrders = () => {
                       ৳{order.totalPrice}
                     </td>
 
-                    {/* পেমেন্ট মেথড */}
-                    <td className="p-4 sm:p-5 align-middle space-y-1.5">
-                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                        order.paymentMethod === 'bkash' ? 'bg-pink-100 text-pink-700' : 'bg-emerald-100 text-emerald-700'
-                      }`}>
-                        {order.paymentMethod}
+                    {/* পেমেন্ট মেথড (Cash on Delivery) */}
+                    <td className="p-4 sm:p-5 align-middle">
+                      <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-700">
+                        Cash on Delivery
                       </span>
-                      <p className="text-xs font-mono text-gray-600 bg-gray-50 px-2 py-1 rounded-lg border border-gray-100 w-fit">
-                        Trx: <span className="font-bold text-gray-900">{order.transactionId}</span>
-                      </p>
                     </td>
 
                     {/* স্ট্যাটাস */}
@@ -322,12 +317,12 @@ const ManageOrders = () => {
                   <p>Subtotal: ৳{calculateSubtotal(selectedOrder.items)}</p>
                   <p>Delivery Charge: ৳{DELIVERY_CHARGE}</p>
                   <p className="grand-total">Grand Total: ৳{selectedOrder.totalPrice}</p>
-                  <p style={{ fontSize: '11px', fontWeight: 'normal', color: '#555', marginTop: '10px' }}>Payment Method: {selectedOrder.paymentMethod} (TrxID: {selectedOrder.transactionId})</p>
+                  <p style={{ fontSize: '11px', fontWeight: 'normal', color: '#555', marginTop: '10px' }}>Payment Method: Cash on Delivery</p>
                 </div>
               </div>
             </div>
 
-            {/* কাস্টমার ইনফো কার্ড (এখানে জিমেইল যুক্ত করা হয়েছে) */}
+            {/* কাস্টমার ইনফো কার্ড */}
             <div className="bg-gray-50/80 p-4 sm:p-5 rounded-2xl border border-gray-100 space-y-2">
               <div className="flex justify-between items-center">
                 <h3 className="text-xs font-black uppercase text-gray-400 tracking-wider">Customer Information</h3>
@@ -346,7 +341,6 @@ const ManageOrders = () => {
                   <p className="text-xs text-gray-400">Phone</p>
                   <p className="font-bold text-gray-900 text-xs sm:text-sm">{selectedOrder.phone}</p>
                 </div>
-                {/* বায়ারের জিমেইল ফিল্ড */}
                 <div className="sm:col-span-2">
                   <p className="text-xs text-gray-400 flex items-center gap-1"><FiMail size={12} /> Email</p>
                   <p className="font-bold text-blue-600 text-xs sm:text-sm">{selectedOrder.email || 'N/A'}</p>
@@ -358,7 +352,7 @@ const ManageOrders = () => {
               </div>
             </div>
 
-            {/* প্রোডাক্ট লিস্ট (কালার এবং সাইজসহ) */}
+            {/* প্রোডাক্ট লিস্ট */}
             <div className="space-y-3">
               <h3 className="text-xs font-black uppercase text-gray-400 tracking-wider">Ordered Items</h3>
               <div className="space-y-2.5 max-h-48 overflow-y-auto pr-1">
@@ -368,7 +362,6 @@ const ManageOrders = () => {
                     <div className="space-y-1 flex-1 min-w-0">
                       <h4 className="font-bold text-gray-900 text-xs sm:text-sm truncate">{item.name}</h4>
                       
-                      {/* কালার এবং সাইজ ব্যাজ */}
                       <div className="flex flex-wrap items-center gap-1.5 text-[11px] sm:text-xs">
                         <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-md font-semibold">
                           Color: <strong className="text-gray-900">{item.color || 'N/A'}</strong>
@@ -398,9 +391,8 @@ const ManageOrders = () => {
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pt-1">
                 <div>
                   <p className="text-xs text-blue-600 font-bold uppercase tracking-wider">
-                    Payment: <span className="uppercase font-black text-gray-900">{selectedOrder.paymentMethod}</span>
+                    Payment Method: <span className="uppercase font-black text-gray-900">Cash on Delivery</span>
                   </p>
-                  <p className="text-xs text-gray-600 font-mono mt-0.5">TrxID: <span className="font-bold text-gray-900">{selectedOrder.transactionId}</span></p>
                 </div>
                 <div className="text-left sm:text-right">
                   <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Grand Total</p>
