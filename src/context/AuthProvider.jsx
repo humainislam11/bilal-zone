@@ -7,7 +7,7 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider, 
   signInWithPopup,
-  updateProfile // 👈 ফায়ারবেস থেকে এটি ইম্পোর্ট করা হয়েছে
+  updateProfile // 👈 ফায়ারবেস থেকে এটি ইম্পোর্ট করা হয়েছে
 } from "firebase/auth";
 import PropTypes from 'prop-types';
 import { AuthContext } from "./AuthContext"; 
@@ -39,14 +39,14 @@ const AuthProvider = ({ children }) => {
     return signInWithPopup(auth, googleProvider);
   };
 
-  // 🌟 ইউজার প্রোফাইল আপডেট করার ফাংশনটি এখানে যোগ করা হয়েছে
+  // 🌟 ইউজার প্রোফাইল আপডেট করার ফাংশনটি এখানে যোগ করা হয়েছে
   const updateUserProfile = (name, photo) => {
     setLoading(true);
     return updateProfile(auth.currentUser, {
       displayName: name,
       photoURL: photo
     }).then(() => {
-      // লোকাল স্টেট আপডেট করা যাতে UI এ সাথে সাথে পরিবর্তন দেখা যায়
+      // লোকাল স্টেট আপডেট করা যাতে UI এ সাথে সাথে পরিবর্তন দেখা যায়
       setUser({ ...auth.currentUser });
       setLoading(false);
     }).catch((error) => {
@@ -81,13 +81,17 @@ const AuthProvider = ({ children }) => {
               confirmButtonText: 'ঠিক আছে'
             });
           } else {
-            // ডাটাবেজে থাকলে ইউজার সেট করব এবং JWT টোকেন জেনারেট করব
-            setUser(currentUser);
+            // 🔧 ফিক্স: আগে JWT টোকেন জেনারেট করে localStorage-এ সেভ করা হচ্ছে,
+            // তারপর setUser() কল করা হচ্ছে। এতে করে Cart/Wishlist এর মতো
+            // component গুলো যখন user স্টেট দেখে API কল করবে, ততক্ষণে
+            // token আগে থেকেই localStorage-এ থাকবে (Bearer null সমস্যা সমাধান)
             const userInfo = { email: currentUser.email };
             const tokenRes = await axiosPublic.post('/jwt', userInfo);
             if (tokenRes.data.token) {
               localStorage.setItem('access-token', tokenRes.data.token);
             }
+            // token সেভ হওয়ার পরেই user সেট করা হচ্ছে
+            setUser(currentUser);
           }
         } catch (error) {
           console.error("Error checking user in database:", error);
@@ -111,7 +115,7 @@ const AuthProvider = ({ children }) => {
     signIn,
     logOut,
     googleLogin,
-    updateUserProfile, // 👈 এটি এখানে যুক্ত করা হয়েছে যাতে অন্য কম্পোনেন্ট থেকে ব্যবহার করা যায়
+    updateUserProfile, // 👈 এটি এখানে যুক্ত করা হয়েছে যাতে অন্য কম্পোনেন্ট থেকে ব্যবহার করা যায়
   };
 
   return (
