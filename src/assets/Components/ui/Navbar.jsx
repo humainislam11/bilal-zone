@@ -82,7 +82,7 @@ const Navbar = () => {
 
     fetchCartAndWishlist();
     
-    // ইভেন্ট লিসেনারগুলো যুক্ত করা হলো যাতে অটো আপডেট হয়
+    // ইভেন্ট লিসেনারগুলো যুক্ত করা হলো যাতে অটো আপডেট হয়
     window.addEventListener('cartUpdated', fetchCartAndWishlist);
     window.addEventListener('wishlistUpdated', fetchCartAndWishlist);
 
@@ -106,8 +106,8 @@ const Navbar = () => {
                 alt="BILAL ZONE" 
                 className="h-10 sm:h-12 w-auto object-contain rounded-xl"
               />
-              <h1 className='text-orange-500 text-2xl font-bold'>Bilal</h1>
-              <h1 className='text-black text-2xl font-bold'>Zone</h1>
+              <h1 className='text-orange-500 text-2xl font-bold'>BILAL</h1>
+              <h1 className='text-black text-2xl font-bold'>ZONE</h1>
             </Link>
           </div>
 
@@ -234,6 +234,22 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* মোবাইল স্ক্রিনের জন্য ফিক্সড বা একদম সামনে সার্চ বার (সরাসরি হেডারে দৃশ্যমান) */}
+      <div className="md:hidden px-4 pb-3 pt-1 bg-white border-t border-slate-100">
+        <form onSubmit={handleSearch} className="relative w-full">
+          <input
+            type="text"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder="Search products..."
+            className="w-full bg-slate-50 text-xs text-slate-800 px-3.5 py-2 pr-8 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 border border-slate-200"
+          />
+          <button type="submit" className="absolute right-3 top-2.5 text-slate-400 hover:text-orange-500">
+            <FiSearch />
+          </button>
+        </form>
+      </div>
+
       {/* ৫. মোবাইল ড্রপডাউন মেনু */}
       {navOpen && (
         <div className="md:hidden bg-white border-t border-slate-100 transition-all duration-300">
@@ -265,22 +281,6 @@ const Navbar = () => {
             ) : (
               <NavLink to="/login" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Login / My Account</NavLink>
             )}
-            
-            {/* মোবাইল সার্চ বার */}
-            <form onSubmit={handleSearch} className="pt-3 border-t border-slate-100">
-              <div className="relative w-full">
-                <input
-                  type="text"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  placeholder="Search products..."
-                  className="w-full bg-slate-50 text-xs text-slate-800 px-3.5 py-2 pr-8 rounded-xl focus:outline-none border border-slate-200"
-                />
-                <button type="submit" className="absolute right-3 top-2.5 text-slate-400">
-                  <FiSearch />
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}

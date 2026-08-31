@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom'; // useLocation যোগ করা হয়েছে
 import { AuthContext } from '../../../context/AuthContext';
 import { FiMail, FiLock, FiEye, FiEyeOff, FiLogIn } from 'react-icons/fi';
+import { Helmet } from 'react-helmet-async';
 
 
 const Login = () => {
@@ -45,6 +46,9 @@ const Login = () => {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 bg-gray-50 py-10">
+      <Helmet>
+              <title>BILAL-ZONE-LOGIN</title>
+            </Helmet>
       <div className="max-w-md w-full bg-white rounded-3xl border border-gray-100 shadow-xl p-6 sm:p-8 space-y-6">
         
         <div className="text-center space-y-1">

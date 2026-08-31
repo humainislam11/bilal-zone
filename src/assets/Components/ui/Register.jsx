@@ -5,6 +5,7 @@ import { FiMail, FiLock, FiUser, FiUserPlus, FiEye, FiEyeOff } from 'react-icons
 import Swal from 'sweetalert2';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
 import { FaGoogle } from 'react-icons/fa';
+import { Helmet } from 'react-helmet-async';
 
 const Register = () => {
   const { createUser, googleLogin } = useContext(AuthContext);
@@ -153,6 +154,9 @@ const Register = () => {
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center px-4 bg-gray-50 py-10">
+      <Helmet>
+              <title>BILAL-ZONE-REGISTER</title>
+            </Helmet>
       <div className="max-w-md w-full bg-white rounded-3xl border border-gray-100 shadow-xl p-6 sm:p-8 space-y-6">
         <div className="text-center space-y-1">
           <h2 className="text-2xl font-black text-gray-900 tracking-tight">

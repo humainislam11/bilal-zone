@@ -2,6 +2,7 @@ import  { useState } from 'react';
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaPaperPlane, FaClock } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import useAxiosSecure from '../../hooks/useAxiosSecure'; 
+import { Helmet } from 'react-helmet-async';
 
 const ContactUs = () => {
     const axiosSecure = useAxiosSecure();
@@ -45,6 +46,10 @@ const ContactUs = () => {
     return (
         <div className="bg-gray-50 text-gray-700 min-h-screen py-12 px-4 sm:px-6 lg:px-8 font-sans">
             {/* Header */}
+
+            <Helmet>
+                    <title>BILAL-ZONE-CONTACT</title>
+                  </Helmet>
             <div className="max-w-7xl mx-auto text-center mb-12">
                 <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-widest">
                     Get In Touch

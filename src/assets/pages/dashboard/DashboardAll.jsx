@@ -6,6 +6,7 @@ import { IoMdAddCircle } from "react-icons/io";
 import { TfiAnnouncement } from "react-icons/tfi";
 import { Outlet, NavLink, Navigate, useLocation } from "react-router-dom";
 import useAdmin from "../../hooks/useAdmin";
+import { Helmet } from "react-helmet-async";
 
 const DashboardAll = () => {
     const [isAdmin] = useAdmin();
@@ -25,6 +26,10 @@ const DashboardAll = () => {
 
     return (
         <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 relative">
+
+            <Helmet>
+        <title>BILAL-ZONE-DASHBOARD</title>
+      </Helmet>
             
             {/* 📱 মোবাইল টপ হেডার (ছোট স্ক্রিনের জন্য মেনু বার্গার বাটন) */}
             <div className="md:hidden bg-white border-b px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">

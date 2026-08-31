@@ -5,6 +5,7 @@ import { useContext, useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { AuthContext } from '../../../context/AuthContext';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
+import { Helmet } from 'react-helmet-async';
 
 const ProductDetails = () => {
   const product = useLoaderData();
@@ -250,6 +251,10 @@ const ProductDetails = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 md:px-8">
+
+     <Helmet>
+             <title>BILAL-ZONE-PRODUCTDETAILS</title>
+           </Helmet>
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Back Button */}
