@@ -75,7 +75,7 @@ const BottomNav = () => {
       )}
 
       {/* ২. মূল বটম নেভ বার (শুধুমাত্র মোবাইল স্ক্রিনে দেখাবে) */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-orange-500 text-white shadow-lg border-t border-orange-600 z-40 py-2 px-3 flex justify-around items-center">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-orange-400 text-white shadow-lg border-t border-orange-600 z-40 py-2 px-3 flex justify-around items-center">
         
         {/* Home */}
         <NavLink 
