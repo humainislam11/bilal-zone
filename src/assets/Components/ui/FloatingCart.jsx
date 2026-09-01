@@ -37,23 +37,23 @@ const FloatingCart = () => {
   return (
     <div 
       onClick={() => navigate('/cart')}
-      className="fixed top-1/2 right-0 -translate-y-1/2 z-50 shadow-2xl rounded-md cursor-pointer overflow-hidden transition-all duration-300 group flex flex-col w-18"
+      className="fixed top-1/2 right-0 -translate-y-1/2 z-50 shadow-xl rounded-l-lg cursor-pointer overflow-hidden transition-all duration-300 group flex flex-col w-14 sm:w-18"
     >
       {/* ওপরের অরেঞ্জ অংশ (আইকন এবং আইটেম টেক্সট) */}
-      <div className="bg-orange-400/80  group-hover:bg-orange-500 text-white p-3 flex flex-col items-center justify-center transition-colors">
-        <div className="relative mb-1">
-          <FiShoppingCart className="text-2xl group-hover:scale-110 transition-transform" />
-          <span className="absolute -top-2 -right-3 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+      <div className="bg-orange-400/90 group-hover:bg-orange-500 text-white py-2 px-1 sm:p-3 flex flex-col items-center justify-center transition-colors">
+        <div className="relative mb-0.5 sm:mb-1">
+          <FiShoppingCart className="text-xl sm:text-2xl group-hover:scale-110 transition-transform" />
+          <span className="absolute -top-1.5 -right-2 sm:-top-2 sm:-right-3 text-white text-[9px] sm:text-[10px] font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center">
             {totalItems}
           </span>
         </div>
-        <div className="text-[10px] font-bold tracking-wider mt-1 uppercase text-center whitespace-nowrap">
+        <div className="text-[9px] sm:text-[10px] font-bold tracking-wider mt-0.5 sm:mt-1 uppercase text-center whitespace-nowrap">
           {totalItems} {totalItems === 1 ? 'ITEM' : 'ITEMS'}
         </div>
       </div>
 
       {/* নিচের সাদা অংশ (টাকার পরিমাণ) */}
-      <div className="bg-white text-slate-800 py-1.5 px-1 text-center font-black text-xs border-t border-slate-100">
+      <div className="bg-white text-slate-800 py-1 px-0.5 sm:py-1.5 sm:px-1 text-center font-black text-[10px] sm:text-xs border-t border-slate-100 truncate w-full">
         ৳{totalPrice.toFixed(2)}
       </div>
     </div>
