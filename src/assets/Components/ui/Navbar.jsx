@@ -177,7 +177,7 @@ const Navbar = () => {
                 )}
               </div>
             ) : (
-              <Link to="/login" className="flex items-center space-x-1 text-xs font-semibold text-slate-700 hover:text-orange-600 transition-colors">
+              <Link to="/register" className="flex items-center space-x-1 text-xs font-semibold text-slate-700 hover:text-orange-600 transition-colors">
                 <FiUser className="text-base" />
                 <span>My Account</span>
               </Link>

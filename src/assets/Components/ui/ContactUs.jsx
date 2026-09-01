@@ -91,7 +91,7 @@ const ContactUs = () => {
                         <div className="bg-orange-50 text-orange-500 p-4 rounded-xl text-lg"><FaClock /></div>
                         <div>
                             <h3 className="font-bold text-gray-800 text-base">Working Hours</h3>
-                            <p className="text-gray-500 text-sm mt-1">Sat - Thu: 9:00 AM - 8:00 PM</p>
+                            <p className="text-gray-500 text-sm mt-1">Sat - Sat: 9:00 AM - 10:00 PM</p>
                         </div>
                     </div>
                 </div>
