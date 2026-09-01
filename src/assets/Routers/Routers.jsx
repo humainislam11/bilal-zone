@@ -5,7 +5,6 @@ import ProductDetails from "../Components/ui/ProductDetails";
 import ShoppingCart from "../Components/ui/ShoppingCart";
 import ErrorPage from "../Components/ui/ErrorPage";
 import Root from "../Layout/Root";
-import Login from "../Components/ui/Login";
 import Register from "../Components/ui/Register";
 import PrivateRoot from "../Components/ui/PrivateRoot";
 import DashboardAll from "../pages/dashboard/DashboardAll";
@@ -48,9 +47,6 @@ const router = createBrowserRouter([
             },{
                 path:'/cart',
                 element:<PrivateRoot><ShoppingCart></ShoppingCart></PrivateRoot>
-            },{
-                path: '/login',
-                element: <Login></Login>
             },{
                 path: '/register',
                 element: <Register></Register>
