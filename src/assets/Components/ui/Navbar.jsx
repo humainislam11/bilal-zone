@@ -1,9 +1,10 @@
 import { useState, useContext, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../context/AuthContext';
-import { FiShoppingCart, FiUser, FiSearch, FiMenu, FiX, FiLogOut, FiLayout, FiHeart } from 'react-icons/fi';
+import { FiShoppingCart, FiUser, FiSearch, FiMenu, FiX, FiLogOut, FiLayout, FiHeart, FiBell } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
+import useAdmin from '../../hooks/useAdmin';
 
 const Navbar = () => {
   const axiosSecure = useAxiosSecure();
@@ -12,11 +13,12 @@ const Navbar = () => {
   const [searchText, setSearchText] = useState('');
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
+  const [unseenOrders, setUnseenOrders] = useState(0);
 
   const { user, logOut } = useContext(AuthContext);
+  const [isAdmin] = useAdmin();
   const navigate = useNavigate();
 
-  // 🚪 লগআউট হ্যান্ডলার
   const handleLogOut = async () => {
     try {
       await logOut();
@@ -33,7 +35,6 @@ const Navbar = () => {
     }
   };
 
-  // 🔍 সার্চ হ্যান্ডলার ফাংশন
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchText.trim()) {
@@ -42,7 +43,6 @@ const Navbar = () => {
     }
   };
 
-  // 🎨 অ্যাক্টিভ রাউট হাইলাইট করার জন্য স্টাইল
   const activeLinkStyle = ({ isActive }) => 
     isActive 
       ? "text-orange-600 font-bold transition-all" 
@@ -53,24 +53,17 @@ const Navbar = () => {
       ? "block px-3 py-2 rounded-xl bg-orange-50 text-orange-600 font-bold" 
       : "block px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-orange-600 transition-colors";
 
-  // 🛒 রিয়েল-টাইম কার্ট এবং উইশলিস্ট ফেচ ও ইভেন্ট লিসেনার
   useEffect(() => {
     let isMounted = true;
 
     const fetchCartAndWishlist = () => {
       if (user?.email) {
-        // কার্ট ডেটা ফেচ
         axiosSecure.get(`/cart?email=${user.email}`)
-          .then(res => { 
-            if (isMounted) setCart(res.data); 
-          })
+          .then(res => { if (isMounted) setCart(res.data); })
           .catch(err => console.error(err));
 
-        // উইশলিস্ট ডেটা ফেচ
         axiosSecure.get(`/wishlist?email=${user.email}`)
-          .then(res => { 
-            if (isMounted) setWishlist(res.data); 
-          })
+          .then(res => { if (isMounted) setWishlist(res.data); })
           .catch(err => console.error(err));
       } else {
         if (isMounted) {
@@ -82,7 +75,6 @@ const Navbar = () => {
 
     fetchCartAndWishlist();
     
-    // ইভেন্ট লিসেনারগুলো যুক্ত করা হলো যাতে অটো আপডেট হয়
     window.addEventListener('cartUpdated', fetchCartAndWishlist);
     window.addEventListener('wishlistUpdated', fetchCartAndWishlist);
 
@@ -93,18 +85,50 @@ const Navbar = () => {
     };
   }, [axiosSecure, user?.email]);
 
+  useEffect(() => {
+    if (!isAdmin || !user?.email) return;
+
+    let isMounted = true;
+
+    const fetchUnseenCount = () => {
+      axiosSecure.get('/orders/unseen-count')
+        .then(res => { if (isMounted) setUnseenOrders(res.data.count); })
+        .catch(err => console.error('Error fetching unseen order count:', err));
+    };
+
+    fetchUnseenCount();
+    const interval = setInterval(fetchUnseenCount, 15000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [axiosSecure, isAdmin, user?.email]);
+
+  const handleBellClick = async () => {
+    try {
+      await axiosSecure.patch('/orders/mark-all-seen');
+      setUnseenOrders(0);
+    } catch (err) {
+      console.error('Error marking orders as seen:', err);
+    }
+    navigate('/dashboard/manageOrders');
+    setNavOpen(false);
+  };
+
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
+          {/* ================= DESKTOP VIEW ================= */}
           {/* ১. লোগো */}
-          <div className="flex items-center">
+          <div className="hidden md:flex items-center">
             <Link to="/" className="flex items-center">
               <img 
                 src="https://i.ibb.co.com/Xr23H5Bv/Whats-App-Image-2026-08-26-at-10-44-30-AM-removebg-preview.png" 
                 alt="BILAL ZONE" 
-                className="h-10 sm:h-12 w-auto object-contain rounded-xl"
+                className="h-12 w-auto object-contain rounded-xl"
               />
               <h1 className='text-orange-500 text-2xl font-bold'>BILAL</h1>
               <h1 className='text-black text-2xl font-bold'>ZONE</h1>
@@ -121,10 +145,8 @@ const Navbar = () => {
             )}
           </nav>
 
-          {/* ৩. সার্চ বার, উইশলিস্ট, কার্ট এবং প্রোফাইল (ডেস্কটপ) */}
+          {/* ৩. ডানপাশের আইকনসমূহ (ডেস্কটপ) */}
           <div className="hidden md:flex items-center space-x-4">
-            
-            {/* সার্চ ইনপুট */}
             <form onSubmit={handleSearch} className="relative">
               <input
                 type="text"
@@ -138,7 +160,6 @@ const Navbar = () => {
               </button>
             </form>
 
-            {/* My Account / User Profile Picture */}
             {user ? (
               <div className="relative">
                 <button
@@ -146,11 +167,7 @@ const Navbar = () => {
                   className="flex items-center space-x-2 text-xs font-semibold text-slate-700 hover:text-orange-600 focus:outline-none cursor-pointer"
                 >
                   {user?.photoURL ? (
-                    <img 
-                      src={user.photoURL} 
-                      alt="Profile" 
-                      className="w-8 h-8 rounded-full object-cover border-2 border-orange-500 shadow-sm" 
-                    />
+                    <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full object-cover border-2 border-orange-500 shadow-sm" />
                   ) : (
                     <div className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
                       <FiUser className="text-base" />
@@ -165,11 +182,9 @@ const Navbar = () => {
                       <p className="text-[10px] text-slate-400 font-semibold uppercase">Logged in as</p>
                       <p className="text-xs font-bold text-slate-800 truncate">{user.displayName || "User"}</p>
                     </div>
-                    
                     <Link to="/dashboard" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-xs text-slate-600 hover:bg-slate-50 hover:text-orange-600 transition-all">
                       <FiLayout /> Dashboard
                     </Link>
-
                     <button onClick={handleLogOut} className="w-full flex items-center gap-2 px-4 py-2 text-xs text-red-600 hover:bg-red-50 transition-all font-semibold cursor-pointer">
                       <FiLogOut /> Log Out
                     </button>
@@ -183,7 +198,17 @@ const Navbar = () => {
               </Link>
             )}
 
-            {/* Wishlist Icon with Badge */}
+            {isAdmin && (
+              <button onClick={handleBellClick} className="relative text-slate-700 hover:text-orange-600 transition-colors cursor-pointer" title="Order Notifications">
+                <FiBell className="text-base" />
+                {unseenOrders > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold animate-pulse">
+                    {unseenOrders > 9 ? '9+' : unseenOrders}
+                  </span>
+                )}
+              </button>
+            )}
+
             <Link to="/wishlist" className="relative text-slate-700 hover:text-orange-600 transition-colors">
               <FiHeart className="text-base" />
               {wishlist.length > 0 && (
@@ -193,7 +218,6 @@ const Navbar = () => {
               )}
             </Link>
 
-            {/* Cart Icon with Badge */}
             <Link to="/cart" className="relative text-slate-700 hover:text-orange-600 transition-colors">
               <FiShoppingCart className="text-base" />
               {cart.length > 0 && (
@@ -204,59 +228,63 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* ৪. মোবাইল মেনু বাটন ও কার্ট/উইশলিস্ট */}
-          <div className="md:hidden flex items-center space-x-3">
-            {/* মোবাইল উইশলিস্ট */}
-            <Link to="/wishlist" className="relative p-1 text-slate-700">
-              <FiHeart className="text-lg" />
-              {wishlist.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-bold">
-                  {wishlist.length}
-                </span>
-              )}
-            </Link>
+          {/* ================= MOBILE VIEW (আপনার ছবি অনুযায়ী সাজানো) ================= */}
+          {/* বাম পাশে মেনু বাটন */}
+          <div className="md:hidden flex items-center">
+            <button 
+              onClick={() => setNavOpen(!navOpen)} 
+              className="text-slate-700 hover:text-orange-600 focus:outline-none p-1"
+            >
+              {navOpen ? <FiX className="text-2xl" /> : <FiMenu className="text-2xl" />}
+            </button>
+          </div>
 
-            {/* মোবাইল কার্ট */}
+          {/* মাঝখানে লোগো */}
+          <div className="md:hidden flex items-center justify-center flex-grow mx-2">
+            <Link to="/" className="flex items-center justify-center">
+              <img 
+                src="https://i.ibb.co.com/Xr23H5Bv/Whats-App-Image-2026-08-26-at-10-44-30-AM-removebg-preview.png" 
+                alt="BILAL ZONE" 
+                className="h-10 w-auto object-contain rounded-lg"
+              />
+              <span className='text-orange-500 text-xl font-bold ml-1'>BILAL</span>
+              <span className='text-black text-xl font-bold ml-0.5'>ZONE</span>
+            </Link>
+          </div>
+
+          {/* ডানপাশে কার্ট আইকন */}
+          <div className="md:hidden flex items-center space-x-2">
             <Link to="/cart" className="relative p-1 text-slate-700">
-              <FiShoppingCart className="text-lg" />
+              <FiShoppingCart className="text-xl" />
               {cart.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-bold">
+                <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
                   {cart.length}
                 </span>
               )}
             </Link>
-
-            <button onClick={() => setNavOpen(!navOpen)} className="text-slate-700 hover:text-orange-600 focus:outline-none">
-              {navOpen ? <FiX className="text-2xl" /> : <FiMenu className="text-2xl" />}
-            </button>
           </div>
 
         </div>
       </div>
 
-      {/* মোবাইল স্ক্রিনের জন্য ফিক্সড বা একদম সামনে সার্চ বার (সরাসরি হেডারে দৃশ্যমান) */}
-      <div className="md:hidden px-4 pb-3 pt-1 bg-white border-t border-slate-100">
-        <form onSubmit={handleSearch} className="relative w-full">
-          <input
-            type="text"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            placeholder="Search products..."
-            className="w-full bg-slate-50 text-xs text-slate-800 px-3.5 py-2 pr-8 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 border border-slate-200"
-          />
-          <button type="submit" className="absolute right-3 top-2.5 text-slate-400 hover:text-orange-500">
-            <FiSearch />
-          </button>
-        </form>
-      </div>
-
-      {/* ৫. মোবাইল ড্রপডাউন মেনু */}
+      {/* মোবাইল ড্রপডাউন মেনু (হ্যামবার্গার মেনু ক্লিক করলে যা আসবে) */}
       {navOpen && (
-        <div className="md:hidden bg-white border-t border-slate-100 transition-all duration-300">
+        <div className="md:hidden bg-white border-t border-slate-100 transition-all duration-300 shadow-lg">
           <div className="px-4 pt-3 pb-6 space-y-2 font-medium text-xs">
             <NavLink to="/" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Home</NavLink>
             <NavLink to="/products" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Shop</NavLink>
             <NavLink to="/contactUs" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Contact</NavLink>
+            
+            {/* মোবাইল মেনুতে উইশলিস্ট বা এডমিন নোটিফিকেশন যুক্ত করতে চাইলে */}
+            <NavLink to="/wishlist" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>
+              Wishlist ({wishlist.length})
+            </NavLink>
+
+            {isAdmin && (
+              <NavLink to="/dashboard/manageOrders" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>
+                Manage Orders {unseenOrders > 0 && `(${unseenOrders})`}
+              </NavLink>
+            )}
 
             {user ? (
               <>

@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import {  useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../../context/AuthContext'; 
 import Swal from 'sweetalert2';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
@@ -10,6 +10,11 @@ const Register = () => {
   const { googleLogin } = useContext(AuthContext);
   const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 👇 ProductDetails থেকে navigate('/register', { state: { from: location } }) করে পাঠানো হয়েছিল,
+  // সেটা এখানে ধরা হচ্ছে। না থাকলে ডিফল্ট হিসেবে হোমে পাঠাবে।
+  const from = location.state?.from?.pathname || '/';
 
   const handleGoogleLogin = async () => {
     try {
@@ -37,7 +42,9 @@ const Register = () => {
         showConfirmButton: false,
         timer: 1500,
       });
-      navigate('/');
+
+      // 👇 রেজিস্ট্রেশন শেষে যেই পেজ থেকে এসেছিল, সেখানেই ফেরত পাঠানো হচ্ছে
+      navigate(from, { replace: true });
     } catch (err) {
       if (err.code === 'auth/popup-closed-by-user') {
         console.log("Google popup closed by user.");

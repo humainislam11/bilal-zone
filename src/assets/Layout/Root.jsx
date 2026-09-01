@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from '../Components/ui/Navbar'; // আপনার নেভবারের পাথ
+import BottomNav from '../Components/ui/BottomNav';
 
 const Root = () => {
   return (
@@ -10,7 +11,7 @@ const Root = () => {
         <Outlet /> {/* এই আউটলেটের জায়গায় Home, Login, Register পেজগুলো রেন্ডার হবে */}
       </main>
      
-     
+     <BottomNav></BottomNav>
     </div>
   );
 };

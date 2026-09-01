@@ -1,4 +1,4 @@
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useLoaderData, useNavigate, useLocation } from 'react-router-dom';
 import { FiArrowLeft, FiShoppingCart, FiHeart, FiShare2, FiTruck, FiRotateCcw, FiShield, FiStar, FiCopy, FiCheck, FiFlag } from 'react-icons/fi';
 import { FaFacebook, FaTwitter, FaWhatsapp, FaLinkedin } from 'react-icons/fa';
 import { useContext, useState, useEffect } from 'react';
@@ -12,13 +12,14 @@ const ProductDetails = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation(); // 👈 বর্তমান page এর তথ্য রাখার জন্য
   const [loading, setLoading] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   const [activeImage, setActiveImage] = useState(product?.images?.[0] || product?.image);
   const [quantity, setQuantity] = useState(1);
-  
+
   // কালার এবং সাইজ ইনিশিয়ালাইজেশন
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || 'Default');
   const [selectedSize, setSelectedSize] = useState(
@@ -38,8 +39,8 @@ const ProductDetails = () => {
   // ডিসকাউন্ট প্রাইস এবং পার্সেন্টেজ ক্যালকুলেশন
   const displayPrice = product?.discountPrice || product?.price;
   const hasDiscount = product?.discountPrice && product.discountPrice < product.price;
-  const discountPercentage = hasDiscount 
-    ? Math.round(((product.price - product.discountPrice) / product.price) * 100) 
+  const discountPercentage = hasDiscount
+    ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
     : 0;
 
   useEffect(() => {
@@ -63,6 +64,18 @@ const ProductDetails = () => {
     }
   }, [user?.email, product?._id, axiosSecure]);
 
+  // 👇 লগইন না থাকলে Register পেজে পাঠানোর হেল্পার ফাংশন
+  const redirectToRegister = (message = 'Please register or login first!') => {
+    Swal.fire({
+      icon: 'info',
+      title: message,
+      text: 'You will be redirected to the registration page.',
+      timer: 1800,
+      showConfirmButton: false
+    });
+    navigate('/register', { state: { from: location } });
+  };
+
   const handleQuantityChange = (type) => {
     if (type === 'decrease' && quantity > 1) {
       setQuantity(quantity - 1);
@@ -81,7 +94,7 @@ const ProductDetails = () => {
   // উইশলিস্টে অ্যাড করার ফাংশন
   const handleAddToWishlist = async () => {
     if (!user?.email) {
-      return Swal.fire({ icon: 'error', title: 'Please login first!' });
+      return redirectToRegister('Please register/login to add to wishlist!');
     }
 
     setWishlistLoading(true);
@@ -115,7 +128,7 @@ const ProductDetails = () => {
 
   const handleAddToCart = async () => {
     if (!user?.email) {
-      return Swal.fire({ icon: 'error', title: 'Please login first!' });
+      return redirectToRegister('Please register/login to add to cart!');
     }
 
     setLoading(true);
@@ -150,7 +163,7 @@ const ProductDetails = () => {
 
   const handleBuyNow = () => {
     if (!user?.email) {
-      return Swal.fire({ icon: 'error', title: 'Please login first!' });
+      return redirectToRegister('Please register/login to buy this product!');
     }
 
     const singleProductItem = {
@@ -182,7 +195,7 @@ const ProductDetails = () => {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (!user?.email) {
-      return Swal.fire({ icon: 'error', title: 'Please login to give a review!' });
+      return redirectToRegister('Please register/login to give a review!');
     }
     if (!userComment.trim()) {
       return Swal.fire({ icon: 'warning', title: 'Please write something in your review.' });
@@ -216,7 +229,7 @@ const ProductDetails = () => {
 
   const handleReportReview = async (reviewId) => {
     if (!user?.email) {
-      return Swal.fire({ icon: 'error', title: 'Please login to report a comment!' });
+      return redirectToRegister('Please register/login to report a comment!');
     }
 
     Swal.fire({
@@ -256,7 +269,7 @@ const ProductDetails = () => {
              <title>BILAL-ZONE-PRODUCTDETAILS</title>
            </Helmet>
       <div className="max-w-7xl mx-auto space-y-8">
-        
+
         {/* Back Button */}
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 font-bold text-gray-600 hover:text-orange-600 transition-colors cursor-pointer">
           <FiArrowLeft /> Back
@@ -264,7 +277,7 @@ const ProductDetails = () => {
 
         {/* Main Details Card */}
         <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6 md:p-10 grid grid-cols-1 lg:grid-cols-3 gap-10 relative">
-          
+
           {/* Image Gallery */}
           <div className="space-y-4 lg:col-span-1">
             <div className="relative aspect-square bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 shadow-inner">
@@ -274,7 +287,7 @@ const ProductDetails = () => {
             {productImages.length > 1 && (
               <div className="grid grid-cols-4 gap-3">
                 {productImages.map((imgUrl, index) => (
-                  <div 
+                  <div
                     key={index}
                     onClick={() => setActiveImage(imgUrl)}
                     className={`aspect-square rounded-xl overflow-hidden border-2 cursor-pointer transition-all ${
@@ -295,17 +308,17 @@ const ProductDetails = () => {
                 <span className="text-orange-600 font-bold uppercase tracking-wider text-xs bg-orange-50 px-3 py-1 rounded-lg inline-block">
                   {product.category}
                 </span>
-                
+
                 {/* Share & Wishlist */}
                 <div className="flex gap-4 text-gray-500 relative text-lg items-center">
                   <button onClick={() => setShowShareModal(!showShareModal)} className="cursor-pointer hover:text-orange-600">
                     <FiShare2 />
                   </button>
-                  
+
                   {/* Wishlist Button with Active State */}
-                  <button 
-                    disabled={wishlistLoading} 
-                    onClick={handleAddToWishlist} 
+                  <button
+                    disabled={wishlistLoading}
+                    onClick={handleAddToWishlist}
                     className={`cursor-pointer transition-colors ${isWishlisted ? 'text-red-500' : 'hover:text-red-500'}`}
                     title="Add to Wishlist"
                   >
@@ -339,9 +352,9 @@ const ProductDetails = () => {
                   )}
                 </div>
               </div>
-              
+
               <h1 className="text-2xl md:text-3xl font-black text-gray-900 leading-snug">{product.name}</h1>
-              
+
               {/* Price Section with Discount Percentage */}
               <div className="flex items-center gap-4 flex-wrap">
                 <p className="text-3xl font-black text-orange-600">৳{displayPrice}</p>
@@ -390,8 +403,8 @@ const ProductDetails = () => {
                         key={idx}
                         onClick={() => setSelectedSize(cleanSize)}
                         className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                          selectedSize === cleanSize 
-                            ? 'bg-orange-600 text-white border-orange-600 shadow-sm' 
+                          selectedSize === cleanSize
+                            ? 'bg-orange-600 text-white border-orange-600 shadow-sm'
                             : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
                         }`}
                       >
@@ -415,15 +428,15 @@ const ProductDetails = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-3 pt-2">
-                <button 
-                  disabled={product.stock === 0 || loading} 
+                <button
+                  disabled={product.stock === 0 || loading}
                   onClick={handleAddToCart}
                   className="py-3.5 px-3 rounded-xl font-bold bg-orange-100 text-orange-600 hover:bg-orange-200 transition-all flex items-center justify-center gap-2 text-sm cursor-pointer"
                 >
                   <FiShoppingCart /> Add to Cart
                 </button>
-                <button 
-                  disabled={product.stock === 0 || loading} 
+                <button
+                  disabled={product.stock === 0 || loading}
                   onClick={handleBuyNow}
                   className="py-3.5 px-3 rounded-xl font-bold bg-orange-500 hover:bg-orange-600 text-white transition-all text-sm shadow-md cursor-pointer"
                 >
@@ -454,7 +467,7 @@ const ProductDetails = () => {
               <div className="space-y-3 pt-1">
                 <div className="flex items-center gap-3 text-gray-700">
                   <FiRotateCcw className="text-base text-orange-600 shrink-0" />
-                  <span className="text-xs font-medium">7 Days Easy Return</span>
+                  <span className="text-xs font-medium">3 Days Easy Return</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-700">
                   <FiShield className="text-base text-orange-600 shrink-0" />
@@ -533,8 +546,8 @@ const ProductDetails = () => {
                   <button
                     onClick={() => handleReportReview(rev._id)}
                     className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
-                      rev.isReported 
-                        ? 'bg-red-50 text-red-600 border-red-200 cursor-not-allowed' 
+                      rev.isReported
+                        ? 'bg-red-50 text-red-600 border-red-200 cursor-not-allowed'
                         : 'text-gray-500 hover:bg-gray-100 border-gray-200'
                     }`}
                   >

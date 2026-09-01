@@ -34,7 +34,7 @@ const router = createBrowserRouter([
                 element: <Home></Home>
             },{
                 path:'/products',
-                element: <PrivateRoot><ProductCatalog></ProductCatalog></PrivateRoot>
+                element: <ProductCatalog></ProductCatalog>
             },
             {
                 path: '/checkOut',
@@ -42,7 +42,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/products/:id',
-                element: <PrivateRoot><ProductDetails></ProductDetails></PrivateRoot>,
+                element: <ProductDetails></ProductDetails>,
                 loader: ({params})=>fetch(`https://bilalzone-backend.xyz/products/${params.id}`)
             },{
                 path:'/cart',
