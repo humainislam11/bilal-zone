@@ -6,7 +6,7 @@ import useAxiosPublic from '../../hooks/useAxiosPublic';
 import { FaGoogle } from 'react-icons/fa';
 import { Helmet } from 'react-helmet-async';
 
-const Login = () => {
+const Register = () => {
   const { googleLogin } = useContext(AuthContext);
   const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const Login = () => {
 
       Swal.fire({
         icon: "success",
-        title: "Sign In successfully",
+        title: "Sign Up successfully",
         showConfirmButton: false,
         timer: 1500,
       });
@@ -50,15 +50,15 @@ const Login = () => {
   return (
     <div className="min-h-[85vh] flex items-center justify-center px-4 bg-gray-50 py-10">
       <Helmet>
-        <title>BILAL-ZONE-LOGIN</title>
+        <title>BILAL-ZONE-REGISTER</title>
       </Helmet>
       <div className="max-w-md w-full bg-white rounded-3xl border border-gray-100 shadow-xl p-6 sm:p-8 space-y-6">
         <div className="text-center space-y-1">
           <h2 className="text-2xl font-black text-gray-900 tracking-tight">
-            Sign In
+            Create Account
           </h2>
           <p className="text-sm text-gray-400">
-            Welcome back to Billal Zone e-commerce
+            Join Billal Zone e-commerce with Google
           </p>
         </div>
 
@@ -70,15 +70,10 @@ const Login = () => {
           <FaGoogle className="text-red-500 text-lg" /> Continue with Google
         </button>
 
-        <p className="text-center text-xs text-gray-400">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-blue-600 font-bold hover:underline">
-            Register here
-          </Link>
-        </p>
+      
       </div>
     </div>
   );
 };
 
-export default Login;
+export default Register;
