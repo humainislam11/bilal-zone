@@ -1,17 +1,19 @@
-import { NavLink, useNavigate } from 'react-router-dom';
-import { FiHome, FiGrid, FiShoppingCart, FiSearch, FiUser, FiX } from 'react-icons/fi';
+import { NavLink, useNavigate,Link } from 'react-router-dom';
+import { FiHome, FiGrid, FiShoppingCart, FiSearch, FiUser, FiX, FiLayout, FiLogOut } from 'react-icons/fi';
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../../context/AuthContext';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
+import Swal from 'sweetalert2';
 
 const BottomNav = () => {
-  const { user } = useContext(AuthContext);
+  const { user, logOut } = useContext(AuthContext);
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
   
   const [cartCount, setCartCount] = useState(0);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
 
   // কার্ট সংখ্যা ফেচ করা
   useEffect(() => {
@@ -38,6 +40,32 @@ const BottomNav = () => {
       navigate(`/products?search=${encodeURIComponent(searchText.trim())}`);
       setIsSearchOpen(false);
       setSearchText('');
+    }
+  };
+
+  // লগআউট হ্যান্ডলার
+  const handleLogOut = async () => {
+    try {
+      await logOut();
+      Swal.fire({
+        icon: "success",
+        title: "Log Out successfully",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      setAccountMenuOpen(false);
+    } catch (error) {
+      console.error("Failed to log out", error);
+    }
+  };
+
+  // My Account ক্লিক হ্যান্ডলার
+  const handleAccountClick = (e) => {
+    e.preventDefault();
+    if (user) {
+      setAccountMenuOpen(!accountMenuOpen);
+    } else {
+      navigate('/login');
     }
   };
 
@@ -74,21 +102,48 @@ const BottomNav = () => {
         </div>
       )}
 
-      {/* ২. মূল বটম নেভ বার (শুধুমাত্র মোবাইল স্ক্রিনে দেখাবে) */}
+      {/* ২. একাউন্ট ড্রপডাউন পপআপ (যখন ইউজার লগইন করা থাকবে এবং My Account এ ক্লিক করবে) */}
+      {accountMenuOpen && user && (
+        <div className="md:hidden fixed inset-0 z-40" onClick={() => setAccountMenuOpen(false)}>
+          <div className="absolute bottom-16 right-4 w-52 bg-white border border-slate-100 rounded-2xl shadow-2xl py-2 z-50" onClick={(e) => e.stopPropagation()}>
+            <div className="px-4 py-2 border-b border-slate-50">
+              <p className="text-[10px] text-slate-400 font-semibold uppercase">Logged in as</p>
+              <p className="text-xs font-bold text-slate-800 truncate">{user.displayName || user.email}</p>
+            </div>
+            <Link 
+              to="/dashboard" 
+              onClick={() => setAccountMenuOpen(false)} 
+              className="flex items-center gap-2 px-4 py-2.5 text-xs text-slate-600 hover:bg-slate-50 hover:text-orange-600 transition-all font-medium"
+            >
+              <FiLayout className="text-sm" /> Dashboard
+            </Link>
+            <button 
+              onClick={handleLogOut} 
+              className="w-full flex items-center gap-2 px-4 py-2.5 text-xs text-red-600 hover:bg-red-50 transition-all font-bold cursor-pointer"
+            >
+              <FiLogOut className="text-sm" /> Log Out
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ৩. মূল বটম নেভ বার (শুধুমাত্র মোবাইল স্ক্রিনে দেখাবে) */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-orange-400 text-white shadow-lg border-t border-orange-600 z-40 py-2 px-3 flex justify-around items-center">
         
         {/* Home */}
         <NavLink 
           to="/" 
+          onClick={() => setAccountMenuOpen(false)}
           className={({ isActive }) => `flex flex-col items-center transition ${isActive ? 'text-white font-bold scale-105' : 'text-orange-100 hover:text-white'}`}
         >
           <FiHome className="text-lg mb-0.5" />
           <span className="text-[10px]">Home</span>
         </NavLink>
 
-        {/* Shop (Navbar-এর Shop পেজের সাথে লিংক করা) */}
+        {/* Shop */}
         <NavLink 
           to="/products" 
+          onClick={() => setAccountMenuOpen(false)}
           className={({ isActive }) => `flex flex-col items-center transition ${isActive ? 'text-white font-bold scale-105' : 'text-orange-100 hover:text-white'}`}
         >
           <FiGrid className="text-lg mb-0.5" />
@@ -98,6 +153,7 @@ const BottomNav = () => {
         {/* Cart with Badge */}
         <NavLink 
           to="/cart" 
+          onClick={() => setAccountMenuOpen(false)}
           className={({ isActive }) => `relative flex flex-col items-center transition ${isActive ? 'text-white font-bold scale-105' : 'text-orange-100 hover:text-white'}`}
         >
           <div className="relative">
@@ -113,21 +169,24 @@ const BottomNav = () => {
 
         {/* Search Trigger Button */}
         <button 
-          onClick={() => setIsSearchOpen(true)}
-          className="flex flex-col items-center text-orange-100 hover:text-white transition"
+          onClick={() => {
+            setIsSearchOpen(true);
+            setAccountMenuOpen(false);
+          }}
+          className="flex flex-col items-center text-orange-100 hover:text-white transition cursor-pointer"
         >
           <FiSearch className="text-lg mb-0.5" />
           <span className="text-[10px]">Search</span>
         </button>
 
-        {/* Contact (Navbar-এর Contact পেজের সাথে লিংক করা) */}
-        <NavLink 
-          to="/contactUs" 
-          className={({ isActive }) => `flex flex-col items-center transition ${isActive ? 'text-white font-bold scale-105' : 'text-orange-100 hover:text-white'}`}
+        {/* My Account / Login */}
+        <button 
+          onClick={handleAccountClick}
+          className="flex flex-col items-center text-orange-100 hover:text-white transition cursor-pointer"
         >
           <FiUser className="text-lg mb-0.5" />
-          <span className="text-[10px]">Contact</span>
-        </NavLink>
+          <span className="text-[10px]">Account</span>
+        </button>
 
       </div>
     </>
