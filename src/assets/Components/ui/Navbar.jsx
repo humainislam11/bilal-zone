@@ -228,7 +228,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* ================= MOBILE VIEW (আপনার ছবি অনুযায়ী সাজানো) ================= */}
+          {/* ================= MOBILE VIEW ================= */}
           {/* বাম পাশে মেনু বাটন */}
           <div className="md:hidden flex items-center">
             <button 
@@ -252,8 +252,19 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* ডানপাশে কার্ট আইকন */}
-          <div className="md:hidden flex items-center space-x-2">
+          {/* ডানপাশে নোটিফিকেশন (যদি অ্যাডমিন হয়) এবং কার্ট আইকন */}
+          <div className="md:hidden flex items-center space-x-3">
+            {isAdmin && (
+              <button onClick={handleBellClick} className="relative p-1 text-slate-700 hover:text-orange-600 transition-colors cursor-pointer" title="Order Notifications">
+                <FiBell className="text-xl" />
+                {unseenOrders > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold animate-pulse">
+                    {unseenOrders > 9 ? '9+' : unseenOrders}
+                  </span>
+                )}
+              </button>
+            )}
+
             <Link to="/cart" className="relative p-1 text-slate-700">
               <FiShoppingCart className="text-xl" />
               {cart.length > 0 && (
@@ -267,7 +278,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* মোবাইল ড্রপডাউন মেনু (হ্যামবার্গার মেনু ক্লিক করলে যা আসবে) */}
+      {/* মোবাইল ড্রপডাউন মেনু */}
       {navOpen && (
         <div className="md:hidden bg-white border-t border-slate-100 transition-all duration-300 shadow-lg">
           <div className="px-4 pt-3 pb-6 space-y-2 font-medium text-xs">
@@ -275,7 +286,6 @@ const Navbar = () => {
             <NavLink to="/products" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Shop</NavLink>
             <NavLink to="/contactUs" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Contact</NavLink>
             
-            {/* মোবাইল মেনুতে উইশলিস্ট বা এডমিন নোটিফিকেশন যুক্ত করতে চাইলে */}
             <NavLink to="/wishlist" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>
               Wishlist ({wishlist.length})
             </NavLink>
