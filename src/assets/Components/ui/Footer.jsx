@@ -23,11 +23,11 @@ const Footer = () => {
                         </p>
                         <div className="flex gap-3 pt-1">
                             {/* Facebook */}
-                            <a href="https://www.facebook.com/share/1HJYXpRUQ2/?mibextid=wwXIfr" target="_blank" rel="noreferrer" className="p-2.5 bg-slate-900 hover:bg-orange-600 text-slate-300 hover:text-white rounded-xl transition-all border border-slate-800">
+                            <a href="https://www.facebook.com/share/1HDeNZRzRX/?mibextid=wwXIfr" target="_blank" rel="noreferrer" className="p-2.5 bg-slate-900 hover:bg-orange-600 text-slate-300 hover:text-white rounded-xl transition-all border border-slate-800">
                                 <FaFacebook />
                             </a>
                             {/* Instagram */}
-                            <a href="https://www.instagram.com/h2r.bilal?igsi=MTEzcmZ6OG1rbjk5cQ%3D%3D&utm_source=qr" target="_blank" rel="noreferrer" className="p-2.5 bg-slate-900 hover:bg-orange-600 text-slate-300 hover:text-white rounded-xl transition-all border border-slate-800">
+                            <a href="https://www.instagram.com/bilalzone?igsi=MTEzcmZ6OG1rbjk5cQ%3D%3D&utm_source=qr" target="_blank" rel="noreferrer" className="p-2.5 bg-slate-900 hover:bg-orange-600 text-slate-300 hover:text-white rounded-xl transition-all border border-slate-800">
                                 <FaInstagram />
                             </a>
                             {/* WhatsApp (Linkedin ও Twitter এর পরিবর্তে যুক্ত করা হয়েছে) */}
