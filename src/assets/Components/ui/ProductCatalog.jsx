@@ -82,7 +82,7 @@ const ProductCatalog = () => {
         {/* হেডার */}
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-black text-gray-950 tracking-tight">Our Shop</h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">Explore top-quality products at Billal Zone</p>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">Explore top-quality products at Bilal Zone</p>
           
           {searchQuery && (
             <div className="mt-3 inline-flex items-center gap-2 bg-blue-50 text-blue-700 text-xs sm:text-sm font-semibold px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border border-blue-100">
