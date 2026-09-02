@@ -1,5 +1,5 @@
-import { useLoaderData, useNavigate, useLocation } from 'react-router-dom';
-import { FiArrowLeft, FiShoppingCart, FiHeart, FiShare2, FiTruck, FiRotateCcw, FiShield, FiStar, FiCopy, FiCheck, FiFlag } from 'react-icons/fi';
+import { useLoaderData, useNavigate, useLocation, Link } from 'react-router-dom';
+import { FiArrowLeft, FiShoppingCart, FiHeart, FiShare2, FiTruck, FiRotateCcw, FiShield, FiStar, FiCopy, FiCheck, FiFlag, FiCheckCircle, FiXCircle, FiEye } from 'react-icons/fi';
 import { FaFacebook, FaTwitter, FaWhatsapp, FaLinkedin } from 'react-icons/fa';
 import { useContext, useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
@@ -7,12 +7,84 @@ import { AuthContext } from '../../../context/AuthContext';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 import { Helmet } from 'react-helmet-async';
 
+// 🌟 অটো-স্লাইডিং থাম্বনেইল স্লাইডার (প্রতি ২ সেকেন্ড পর পর স্লাইড হবে)
+const ThumbnailSlider = ({ images, activeImage, onSelect }) => {
+  const ITEMS_PER_VIEW = 4;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [noTransition, setNoTransition] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // seamless loop এর জন্য শুরুর কয়েকটা ইমেজ শেষে আবার জুড়ে দেওয়া হলো
+  const extendedImages = [...images, ...images.slice(0, ITEMS_PER_VIEW)];
+
+  useEffect(() => {
+    if (images.length <= ITEMS_PER_VIEW || isPaused) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex(prev => prev + 1);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [images.length, isPaused]);
+
+  useEffect(() => {
+    if (currentIndex === images.length) {
+      const timeout = setTimeout(() => {
+        setNoTransition(true);
+        setCurrentIndex(0);
+      }, 500); // ট্রানজিশন শেষ হওয়ার পর রিসেট
+      return () => clearTimeout(timeout);
+    } else if (noTransition) {
+      const raf = requestAnimationFrame(() => setNoTransition(false));
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [currentIndex, images.length, noTransition]);
+
+  // 🌟 স্লাইড বদলানোর সাথে সাথে মূল (বড়) ছবিটাও অটোমেটিক বদলে যাবে
+  useEffect(() => {
+    const realIndex = currentIndex % images.length;
+    onSelect(images[realIndex]);
+  }, [currentIndex, images, onSelect]);
+
+  return (
+    <div
+      className="overflow-hidden"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      <div
+        className="flex gap-3"
+        style={{
+          transform: `translateX(-${currentIndex * (100 / ITEMS_PER_VIEW)}%)`,
+          transition: noTransition ? 'none' : 'transform 0.5s ease',
+        }}
+      >
+        {extendedImages.map((imgUrl, index) => (
+          <div
+            key={index}
+            onClick={() => {
+              setCurrentIndex(index % images.length);
+              onSelect(imgUrl);
+            }}
+            style={{ flex: `0 0 calc(${100 / ITEMS_PER_VIEW}% - 9px)` }}
+            className={`aspect-square rounded-xl overflow-hidden border-2 cursor-pointer transition-all ${
+              activeImage === imgUrl ? 'border-orange-500 scale-95 shadow-md' : 'border-transparent hover:opacity-80'
+            }`}
+          >
+            <img src={imgUrl} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const ProductDetails = () => {
   const product = useLoaderData();
   const axiosSecure = useAxiosSecure();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-  const location = useLocation(); // 👈 বর্তমান page এর তথ্য রাখার জন্য
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -30,19 +102,35 @@ const ProductDetails = () => {
   const [copied, setCopied] = useState(false);
 
   const [reviews, setReviews] = useState([]);
+  const [visibleReviewsCount, setVisibleReviewsCount] = useState(5);
   const [userRating, setUserRating] = useState(5);
   const [userComment, setUserComment] = useState('');
   const [reviewLoading, setReviewLoading] = useState(false);
 
+  const [relatedProducts, setRelatedProducts] = useState([]);
+
   const currentUrl = window.location.href;
 
-  // ডিসকাউন্ট প্রাইস এবং পার্সেন্টেজ ক্যালকুলেশন
   const displayPrice = product?.discountPrice || product?.price;
   const hasDiscount = product?.discountPrice && product.discountPrice < product.price;
   const discountPercentage = hasDiscount
     ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
     : 0;
 
+  // 🌟 প্রোডাক্ট বা আইডি বদলালে ইমেজ এবং কাউন্ট রিসেট করার জন্য
+  // (useEffect এর বদলে render-time state adjustment ব্যবহার করা হয়েছে,
+  //  যাতে "Calling setState synchronously within an effect" warning না আসে)
+  const [prevProductId, setPrevProductId] = useState(product?._id);
+  if (product?._id !== prevProductId) {
+    setPrevProductId(product?._id);
+    setActiveImage(product?.images?.[0] || product?.image);
+    setSelectedColor(product?.colors?.[0] || 'Default');
+    setSelectedSize(product?.size ? product.size.split(',')[0].trim() : 'M');
+    setQuantity(1);
+    setVisibleReviewsCount(5);
+  }
+
+  // রিভিউ ফেচ করা
   useEffect(() => {
     if (product?._id) {
       axiosSecure.get(`/reviews/${product._id}`)
@@ -51,20 +139,33 @@ const ProductDetails = () => {
     }
   }, [product?._id, axiosSecure]);
 
-  // উইশলিস্টে অলরেডি আছে কিনা চেক করার জন্য
+  // একই ক্যাটাগরির রিলেটেড প্রোডাক্টস ফেচ করা
+  useEffect(() => {
+    if (product?.category) {
+      axiosSecure.get(`/products?category=${product.category}`)
+        .then(res => {
+          const filtered = res.data.filter(item => item._id !== product._id);
+          setRelatedProducts(filtered);
+        })
+        .catch(err => console.error("Error fetching related products:", err));
+    }
+  }, [product?.category, product?._id, axiosSecure]);
+
+  // উইশলিস্টে আছে কিনা চেক করা
   useEffect(() => {
     if (user?.email && product?._id) {
       axiosSecure.get(`/wishlist/check?email=${user.email}&productId=${product._id}`)
         .then(res => {
           if (res.data?.exists) {
             setIsWishlisted(true);
+          } else {
+            setIsWishlisted(false);
           }
         })
         .catch(err => console.error("Error checking wishlist:", err));
     }
   }, [user?.email, product?._id, axiosSecure]);
 
-  // 👇 লগইন না থাকলে Register পেজে পাঠানোর হেল্পার ফাংশন
   const redirectToRegister = (message = 'Please register or login first!') => {
     Swal.fire({
       icon: 'info',
@@ -91,7 +192,6 @@ const ProductDetails = () => {
     }
   };
 
-  // উইশলিস্টে অ্যাড করার ফাংশন
   const handleAddToWishlist = async () => {
     if (!user?.email) {
       return redirectToRegister('Please register/login to add to wishlist!');
@@ -264,12 +364,11 @@ const ProductDetails = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 md:px-8">
+      <Helmet>
+        <title>BILAL-ZONE-PRODUCTDETAILS</title>
+      </Helmet>
 
-     <Helmet>
-             <title>BILAL-ZONE-PRODUCTDETAILS</title>
-           </Helmet>
       <div className="max-w-7xl mx-auto space-y-8">
-
         {/* Back Button */}
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 font-bold text-gray-600 hover:text-orange-600 transition-colors cursor-pointer">
           <FiArrowLeft /> Back
@@ -277,7 +376,6 @@ const ProductDetails = () => {
 
         {/* Main Details Card */}
         <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6 md:p-10 grid grid-cols-1 lg:grid-cols-3 gap-10 relative">
-
           {/* Image Gallery */}
           <div className="space-y-4 lg:col-span-1">
             <div className="relative aspect-square bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 shadow-inner">
@@ -285,19 +383,11 @@ const ProductDetails = () => {
             </div>
 
             {productImages.length > 1 && (
-              <div className="grid grid-cols-4 gap-3">
-                {productImages.map((imgUrl, index) => (
-                  <div
-                    key={index}
-                    onClick={() => setActiveImage(imgUrl)}
-                    className={`aspect-square rounded-xl overflow-hidden border-2 cursor-pointer transition-all ${
-                      activeImage === imgUrl ? 'border-orange-500 scale-95 shadow-md' : 'border-transparent hover:opacity-80'
-                    }`}
-                  >
-                    <img src={imgUrl} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
-                  </div>
-                ))}
-              </div>
+              <ThumbnailSlider
+                images={productImages}
+                activeImage={activeImage}
+                onSelect={setActiveImage}
+              />
             )}
           </div>
 
@@ -315,7 +405,6 @@ const ProductDetails = () => {
                     <FiShare2 />
                   </button>
 
-                  {/* Wishlist Button with Active State */}
                   <button
                     disabled={wishlistLoading}
                     onClick={handleAddToWishlist}
@@ -355,7 +444,7 @@ const ProductDetails = () => {
 
               <h1 className="text-2xl md:text-3xl font-black text-gray-900 leading-snug">{product.name}</h1>
 
-              {/* Price Section with Discount Percentage */}
+              {/* Price Section */}
               <div className="flex items-center gap-4 flex-wrap">
                 <p className="text-3xl font-black text-orange-600">৳{displayPrice}</p>
                 {hasDiscount && (
@@ -476,7 +565,6 @@ const ProductDetails = () => {
               </div>
             </div>
           </div>
-
         </div>
 
         {/* Full Description Section */}
@@ -525,40 +613,125 @@ const ProductDetails = () => {
             {reviews.length === 0 ? (
               <p className="text-gray-500 text-sm text-center py-4">No reviews yet. Be the first one to review!</p>
             ) : (
-              reviews.map((rev, index) => (
-                <div key={rev._id || index} className="pt-4 flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <img src={rev.userPhoto} alt={rev.userName} className="w-10 h-10 rounded-full object-cover border" />
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-3">
-                        <p className="font-bold text-sm text-gray-800">{rev.userName}</p>
-                        <div className="flex text-yellow-500 text-xs">
-                          {[...Array(rev.rating)].map((_, i) => (
-                            <FiStar key={i} className="fill-yellow-500" />
-                          ))}
+              <>
+                {reviews.slice(0, visibleReviewsCount).map((rev, index) => (
+                  <div key={rev._id || index} className="pt-4 flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                      <img src={rev.userPhoto} alt={rev.userName} className="w-10 h-10 rounded-full object-cover border" />
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-3">
+                          <p className="font-bold text-sm text-gray-800">{rev.userName}</p>
+                          <div className="flex text-yellow-500 text-xs">
+                            {[...Array(rev.rating)].map((_, i) => (
+                              <FiStar key={i} className="fill-yellow-500" />
+                            ))}
+                          </div>
                         </div>
+                        <p className="text-xs text-gray-400">{new Date(rev.date).toLocaleDateString()}</p>
+                        <p className="text-sm text-gray-600 pt-1">{rev.comment}</p>
                       </div>
-                      <p className="text-xs text-gray-400">{new Date(rev.date).toLocaleDateString()}</p>
-                      <p className="text-sm text-gray-600 pt-1">{rev.comment}</p>
                     </div>
-                  </div>
 
-                  <button
-                    onClick={() => handleReportReview(rev._id)}
-                    className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
-                      rev.isReported
-                        ? 'bg-red-50 text-red-600 border-red-200 cursor-not-allowed'
-                        : 'text-gray-500 hover:bg-gray-100 border-gray-200'
-                    }`}
-                  >
-                    <FiFlag className="text-sm" />
-                    {rev.isReported ? 'Reported' : 'Report'}
-                  </button>
-                </div>
-              ))
+                    <button
+                      onClick={() => handleReportReview(rev._id)}
+                      className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
+                        rev.isReported
+                          ? 'bg-red-50 text-red-600 border-red-200 cursor-not-allowed'
+                          : 'text-gray-500 hover:bg-gray-100 border-gray-200'
+                      }`}
+                    >
+                      <FiFlag className="text-sm" />
+                      {rev.isReported ? 'Reported' : 'Report'}
+                    </button>
+                  </div>
+                ))}
+
+                {visibleReviewsCount < reviews.length && (
+                  <div className="text-center pt-4">
+                    <button
+                      onClick={() => setVisibleReviewsCount(prev => prev + 5)}
+                      className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs rounded-xl transition cursor-pointer"
+                    >
+                      See More Reviews
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
+
+        {/* Related Products Section */}
+        {relatedProducts.length > 0 && (
+          <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6 md:p-8 space-y-6">
+            <h2 className="text-xl font-black text-gray-900">Related Products</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-6">
+              {relatedProducts.map((item) => {
+                const relatedDisplayPrice = item.discountPrice || item.price;
+                const relatedHasDiscount = item.discountPrice && item.discountPrice < item.price;
+                const relatedDiscountPercentage = relatedHasDiscount
+                  ? Math.round(((item.price - item.discountPrice) / item.price) * 100)
+                  : 0;
+
+                return (
+                  <Link
+                    to={`/products/${item._id}`}
+                    key={item._id}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="group bg-white rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative cursor-pointer"
+                  >
+                    <div className="relative aspect-square w-full bg-gray-100 overflow-hidden">
+                      <img
+                        src={item.images?.[0] || item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                        <div className="bg-white/90 p-2 sm:p-3 rounded-full shadow-lg text-orange-600 transform translate-y-2 group-hover:translate-y-0 transition-transform font-bold flex items-center gap-1 text-[11px] sm:text-xs">
+                          <FiEye className="text-sm sm:text-lg" /> Details
+                        </div>
+                      </div>
+
+                      <span className={`absolute top-2 right-2 sm:top-3 sm:right-3 text-[9px] sm:text-[10px] font-black uppercase px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg shadow-sm flex items-center gap-1 z-10 ${
+                        item.stock > 0 ? "bg-green-500 text-white" : "bg-red-500 text-white"
+                      }`}>
+                        {item.stock > 0 ? <FiCheckCircle size={10} /> : <FiXCircle size={10} />}
+                        <span className="hidden xs:inline">{item.stock > 0 ? "In Stock" : "Out Of Stock"}</span>
+                      </span>
+
+                      {relatedHasDiscount && (
+                        <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-500 text-white text-[9px] sm:text-[10px] font-black uppercase px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg shadow-sm z-10">
+                          {relatedDiscountPercentage}% OFF
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between space-y-2.5 sm:space-y-4">
+                      <div className="space-y-0.5 sm:space-y-1">
+                        <span className="text-[9px] sm:text-[10px] font-bold text-orange-600 uppercase tracking-widest">{item.category}</span>
+                        <h3 className="font-bold text-gray-800 text-xs sm:text-base leading-snug truncate group-hover:text-orange-600 transition-colors">
+                          {item.name}
+                        </h3>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1 sm:pt-2">
+                        <div className="flex flex-col">
+                          <span className="text-[9px] sm:text-[10px] text-gray-400 font-medium">Price</span>
+                          <div className="flex items-center gap-1.5 sm:gap-2">
+                            <span className="text-sm sm:text-lg font-black text-gray-900">৳{relatedDisplayPrice}</span>
+                            {relatedHasDiscount && (
+                              <span className="text-[11px] sm:text-xs font-bold text-gray-400 line-through">৳{item.price}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

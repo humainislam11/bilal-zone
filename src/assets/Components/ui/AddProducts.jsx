@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
-import { FiUploadCloud } from 'react-icons/fi';
+import { FiUploadCloud, FiStar } from 'react-icons/fi';
 import { FaSpinner } from 'react-icons/fa';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 
@@ -9,6 +9,9 @@ import useAxiosSecure from '../../hooks/useAxiosSecure';
 const cloud_name = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const cloudinary_upload_preset = "bilal-zone"; 
 const cloudinary_api = `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`;
+
+// 🌟 সর্বোচ্চ কতগুলো ইমেজ আপলোড করা যাবে
+const MAX_IMAGES = 6;
 
 const AddProducts = () => {
   const { register, handleSubmit, reset } = useForm();
@@ -19,10 +22,40 @@ const AddProducts = () => {
   const [loading, setLoading] = useState(false);
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files).slice(0, 3);
+    const files = Array.from(e.target.files).slice(0, MAX_IMAGES);
+
+    if (e.target.files.length > MAX_IMAGES) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Limit Exceeded',
+        text: `You can upload a maximum of ${MAX_IMAGES} images. First ${MAX_IMAGES} images have been selected.`,
+        timer: 2000,
+        showConfirmButton: false
+      });
+    }
+
     setSelectedFiles(files); 
     const previews = files.map(file => URL.createObjectURL(file));
     setPreviewImages(previews);
+  };
+
+  // 🌟 কোন ছবিটা মেইন/কভার (সবার প্রথমে দেখানো) ছবি হবে সেটা সিলেক্ট করার ফাংশন
+  const handleSetAsCover = (index) => {
+    if (index === 0) return; // এটা আগে থেকেই কভার ছবি
+
+    setPreviewImages(prev => {
+      const updated = [...prev];
+      const [selected] = updated.splice(index, 1);
+      updated.unshift(selected);
+      return updated;
+    });
+
+    setSelectedFiles(prev => {
+      const updated = [...prev];
+      const [selected] = updated.splice(index, 1);
+      updated.unshift(selected);
+      return updated;
+    });
   };
 
   const onSubmit = async (data) => {
@@ -105,7 +138,7 @@ const AddProducts = () => {
             className="w-full p-3 bg-gray-50 rounded-xl border text-gray-800 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500" 
           />
           
-          {/* Price Section: Original Price, Discount Price & Stock (Mobile এ ১ কলাম, বড় স্ক্রিনে ৩ কলাম) */}
+          {/* Price Section: Original Price, Discount Price & Stock (Mobile এ ১ কলাম, বড় স্ক্রিনে ৩ কলাম) */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <input 
               {...register("price", { required: true })} 
@@ -127,7 +160,7 @@ const AddProducts = () => {
             />
           </div>
 
-          {/* Category & Size (Mobile এ ১ কলাম, বড় স্ক্রিনে ২ কলাম) */}
+          {/* Category & Size (Mobile এ ১ কলাম, বড় স্ক্রিনে ২ কলাম) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-gray-400 block mb-1">Category (Select or Type)</label>
@@ -188,10 +221,40 @@ const AddProducts = () => {
           {/* Preview Images */}
           {previewImages.length > 0 && (
             <div>
-              <label className="text-xs text-gray-400 block mb-2">Selected Images Preview:</label>
-              <div className="flex gap-2 flex-wrap">
+              <label className="text-xs text-gray-400 block mb-2">
+                Selected Images Preview: <span className="text-gray-600">({previewImages.length}/{MAX_IMAGES})</span>
+                <span className="block text-[10px] text-gray-400 mt-0.5 normal-case font-normal">
+                  ছবির উপর হোভার করে "Set Cover" চাপুন যেটা মেইন ছবি হিসেবে দেখাতে চান
+                </span>
+              </label>
+              <div className="flex gap-3 flex-wrap">
                 {previewImages.map((src, index) => (
-                  <img key={index} src={src} alt="Preview" className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border shadow-sm" />
+                  <div key={index} className="relative group w-16 h-16 sm:w-20 sm:h-20">
+                    <img
+                      src={src}
+                      alt="Preview"
+                      className={`w-full h-full object-cover rounded-xl border shadow-sm transition-all ${
+                        index === 0 ? 'border-2 border-blue-600' : 'border'
+                      }`}
+                    />
+
+                    {index === 0 ? (
+                      <span className="absolute -top-2 -left-2 bg-blue-600 text-white text-[8px] sm:text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full shadow flex items-center gap-0.5">
+                        <FiStar size={8} /> Cover
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleSetAsCover(index)}
+                        className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      >
+                        <span className="text-white text-[8px] sm:text-[9px] font-bold flex flex-col items-center gap-0.5">
+                          <FiStar size={12} />
+                          Set Cover
+                        </span>
+                      </button>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
@@ -200,7 +263,7 @@ const AddProducts = () => {
           {/* Upload Area */}
           <label className="flex flex-col items-center justify-center w-full h-28 sm:h-32 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:bg-gray-50 transition">
             <FiUploadCloud className="text-2xl text-gray-400" />
-            <span className="text-xs text-gray-500 mt-1 text-center px-2">Upload up to 3 Product Images</span>
+            <span className="text-xs text-gray-500 mt-1 text-center px-2">Upload up to {MAX_IMAGES} Product Images</span>
             <input 
               type="file" 
               className="hidden" 
