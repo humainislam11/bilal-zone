@@ -7,6 +7,10 @@ const Banner = () => {
   // স্লাইডার ইমেজ (বামপাশে ঘুরবে) — সবগুলোর background black
   const slides = [
     {
+      src: "https://i.ibb.co.com/VWVHkCSX/bilal-zone-banner-1650x800.jpg",
+      bg: "bg-black",
+    },
+    {
       src: "https://i.ibb.co.com/BH7xGmts/Gemini-Generated-Image-ejj9wpejj9wpejj9.jpg",
       bg: "bg-black",
     },
@@ -14,10 +18,14 @@ const Banner = () => {
       src: "https://i.ibb.co.com/0pT8fcHM/Gemini-Generated-Image-tv3xv5tv3xv5tv3x.jpg",
       bg: "bg-black",
     },
+    {
+      src: "https://i.ibb.co.com/QvDMyyzz/banner-1600x760.jpg",
+      bg: "bg-black",
+    }
   ];
 
   // ডানপাশের স্ট্যাটিক ব্যানার (মোবাইলে দেখা যাবে না)
-  const sideBanner = "https://i.ibb.co.com/qFkWkRsH/Gemini-Generated-Image-mmu4oummu4oummu4.jpg";
+  const sideBanner = "https://i.ibb.co.com/WvRMYfFy/collection-poster-english-numbers.jpg";
 
   const SLIDE_DURATION = 4000;
 
