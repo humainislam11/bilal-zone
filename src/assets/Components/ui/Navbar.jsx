@@ -126,7 +126,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center">
             <Link to="/" className="flex items-center">
               <img 
-                src="https://i.ibb.co.com/Xr23H5Bv/Whats-App-Image-2026-08-26-at-10-44-30-AM-removebg-preview.png" 
+                src="https://i.ibb.co.com/bgnVy6BL/Whats-App-Image-2026-09-03-at-2-45-57-PM-removebg-preview.png" 
                 alt="BILAL ZONE" 
                 className="h-12 w-auto object-contain rounded-xl"
               />
@@ -243,7 +243,7 @@ const Navbar = () => {
           <div className="md:hidden flex items-center justify-center flex-grow mx-2">
             <Link to="/" className="flex items-center justify-center">
               <img 
-                src="https://i.ibb.co.com/Xr23H5Bv/Whats-App-Image-2026-08-26-at-10-44-30-AM-removebg-preview.png" 
+                src="https://i.ibb.co.com/bgnVy6BL/Whats-App-Image-2026-09-03-at-2-45-57-PM-removebg-preview.png" 
                 alt="BILAL ZONE" 
                 className="h-10 w-auto object-contain rounded-lg"
               />

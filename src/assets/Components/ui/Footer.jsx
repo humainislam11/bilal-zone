@@ -13,7 +13,7 @@ const Footer = () => {
                     <div className="space-y-4">
                         <Link to="/" className="inline-block">
                             <img 
-                                src="https://i.ibb.co.com/zTfk7LVs/Whats-App-Image-2026-08-26-at-10-44-30-AM.jpg" 
+                                src="https://i.ibb.co.com/bgnVy6BL/Whats-App-Image-2026-09-03-at-2-45-57-PM-removebg-preview.png" 
                                 alt="BILAL ZONE" 
                                 className="h-12 w-auto object-contain rounded-xl"
                             />
