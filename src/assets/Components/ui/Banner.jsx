@@ -52,7 +52,7 @@ const Banner = () => {
       <div className="flex flex-col md:flex-row gap-3 sm:gap-4">
 
         {/* বামপাশ: ইমেজ স্লাইডার */}
-        <div className="relative md:flex-[2] h-[220px] sm:h-[320px] md:h-[380px] w-full rounded-2xl overflow-hidden shadow-lg group bg-slate-100 border border-slate-200/70">
+        <div className="relative md:flex-[2] h-[190px] sm:h-[320px] md:h-[380px] w-full rounded-2xl overflow-hidden shadow-lg group bg-slate-100 border border-slate-200/70">
 
           {slides.map((slide, index) => (
             <div
