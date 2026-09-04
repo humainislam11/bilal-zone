@@ -59,11 +59,9 @@ const BannerGrid = () => {
   return (
     <section className="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="text-center mb-8">
-        <span className="text-xs font-black uppercase tracking-widest text-orange-600 bg-orange-50 px-3 py-1 rounded-full border border-orange-100">
-          Featured Collections
-        </span>
+        
         <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-2">Shop By Categories</h2>
-        <p className="text-xs sm:text-sm text-gray-500 mt-1">Explore our exclusive product ranges tailored just for you</p>
+        <p className="text-xs sm:text-sm text-gray-500 mt-1">Versatile everyday apparel crafted for ultimate comfort, modern style, and a sharp look from head to toe.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
