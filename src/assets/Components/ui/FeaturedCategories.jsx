@@ -24,7 +24,7 @@ const FeaturedCategories = () => {
     },
     { 
       name: "Hoodie", 
-      image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=500&auto=format&fit=crop&q=60", 
+      image: "https://i.ibb.co.com/RGzhBTCg/Gemini-Generated-Image-ng7mugng7mugng7m.jpg", 
       query: "Hoodie" 
     },
     { 
@@ -32,11 +32,37 @@ const FeaturedCategories = () => {
       image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&auto=format&fit=crop&q=60", 
       query: "Jacket" 
     },
-    { 
-      name: "Custom", 
-      image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500&auto=format&fit=crop&q=60", 
-      query: "Custom" 
-    },
+    {
+    "name": "Jeans",
+    "image": "https://images.unsplash.com/photo-1542272604-787c3835535d?w=500&auto=format&fit=crop&q=60",
+    "query": "Jeans"
+  },
+  {
+    "name": "Panjabi",
+    "image": "https://i.ibb.co.com/4Z1FMkV1/Gemini-Generated-Image-fs0th7fs0th7fs0t.jpg",
+    "query": "Panjabi"
+  },
+  {
+    "name": "Joggers",
+    "image": "https://i.ibb.co.com/7tjcY6MP/images-17.jpg",
+    "query": "Joggers"
+  },
+  
+  {
+    "name": "Polo Shirt",
+    "image": "https://i.ibb.co.com/sMMwRLX/Gemini-Generated-Image-bzvv9nbzvv9nbzvv.jpg",
+    "query": "Polo Shirt"
+  },
+  {
+    "name": "Cargo Pants",
+    "image": "https://i.ibb.co.com/27tgYMHJ/Gemini-Generated-Image-th9zkhth9zkhth9z.jpg",
+    "query": "Cargo Pants"
+  },
+  {
+    "name": "Denim Jacket",
+    "image": "https://i.ibb.co.com/1tFmMN7c/Gemini-Generated-Image-2kctf62kctf62kct.jpg",
+    "query": "Denim Jacket"
+  }
   ];
 
   const scroll = (direction) => {
