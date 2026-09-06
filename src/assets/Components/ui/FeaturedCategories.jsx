@@ -5,7 +5,7 @@ import { useRef } from 'react';
 const FeaturedCategories = () => {
   const scrollRef = useRef(null);
 
-  // আপনার চাওয়া অনুযায়ী Shirt, T-Shirt, Hoodie, Pant, Jacket এবং Custom ক্যাটাগরিগুলো যুক্ত করা হলো
+  
   const categories = [
     { 
       name: "T-Shirt", 
