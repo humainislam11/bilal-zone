@@ -317,7 +317,7 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
-              <NavLink to="/login" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Login / My Account</NavLink>
+              <NavLink to="/register" onClick={() => setNavOpen(false)} className={mobileActiveLinkStyle}>Login / My Account</NavLink>
             )}
           </div>
         </div>

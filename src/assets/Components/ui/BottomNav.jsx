@@ -65,7 +65,7 @@ const BottomNav = () => {
     if (user) {
       setAccountMenuOpen(!accountMenuOpen);
     } else {
-      navigate('/login');
+      navigate('/register');
     }
   };
 
