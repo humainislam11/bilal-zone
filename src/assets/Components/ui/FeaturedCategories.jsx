@@ -13,6 +13,11 @@ const FeaturedCategories = () => {
       query: "T-Shirt" 
     },
     { 
+      name: "Parts", 
+      image: "https://i.ibb.co.com/s9H83yTD/fowdgnyaxvjkjub9dvio.jpg", 
+      query: "Parts" 
+    },
+    { 
       name: "Shirt", 
       image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500&auto=format&fit=crop&q=60", 
       query: "Shirt" 

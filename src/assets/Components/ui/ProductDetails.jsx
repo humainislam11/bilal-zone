@@ -18,7 +18,7 @@ const ThumbnailSlider = ({ images, activeImage, onSelect }) => {
   const extendedImages = [...images, ...images.slice(0, ITEMS_PER_VIEW)];
 
   useEffect(() => {
-    if (images.length <= ITEMS_PER_VIEW || isPaused) return;
+    if (images.length <= 1 || isPaused) return;
 
     const interval = setInterval(() => {
       setCurrentIndex(prev => prev + 1);
